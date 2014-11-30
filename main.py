@@ -19,8 +19,7 @@ def compress(filename):
     table = parse_tree_code(t)
     #print("Original:\n {}".format(table))
     save_compressed_file(filename, table)
-    #retrieve_compressed_file(filename)
-
+    retrieve_compressed_file(filename)
 
 
 if __name__ == '__main__':

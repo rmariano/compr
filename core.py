@@ -145,12 +145,47 @@ def save_compressed_file(filename, table):
     with open(new_file, 'wb') as f:
         save_table(f, table)
         compress_and_save_content(filename, f, table)
+    return
 
+
+def decode_file_content(compfile, table):
+    """Reconstruct the remaining part of the <compfile>, starting right after
+    the metadata, decoding each bit according to the <table>."""
+    new_filename = "{}.extracted".format(compfile.name)
+    binary_content = compfile.read()  # TODO: buffer
+    cont = binascii.hexlify(binary_content)
+    bitarray = bin(int(cont, 16))[2:]
+    i, j = 0, 1
+    part = bitarray[i:j]
+    newchars = []
+    #import pdb;  pdb.set_trace()
+    while part:
+        char = table.get(bitarray[i:j], False)
+        while not char:
+            j += 1
+            char = table.get(bitarray[i:j], False)
+            if not bitarray[i:j]:
+                break
+        newchars.append(char)  # TODO: buffer
+        i, j = j, j + 1
+        part = bitarray[i:j]
+    print("Writing extracted file")
+    with open(new_filename, 'w+') as output_file:
+        output_file.write(''.join(newchars))
+    return
+
+
+def _reorganize_table_keys(table):
+    """Change the keys of the table to be more easily readable: bytes->str"""
+    return {k[2:]: v for k, v in table.items()}
 
 
 def retrieve_compressed_file(filename):
-    """Reconstruct the original file from the compressed copy."""
+    """EXTRACT - Reconstruct the original file from the compressed copy."""
     fname = _brand_filename(filename)
     with open(fname, 'rb') as f:
         t = retrieve_table(f)
         #print("Retrieved table:\n{}".format(t))
+        table = _reorganize_table_keys(t)
+        decode_file_content(f, table)
+    return
