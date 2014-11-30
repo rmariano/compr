@@ -1,8 +1,11 @@
 import heapq
 import struct
+import binascii
 from collections import Counter
 
 ENC = 'utf-8'
+BYTES = 8
+BUFF_SIZE = 1024 * BYTES
 
 
 class CharNode(object):
@@ -89,6 +92,32 @@ def save_table(dest_file, table):
     dest_file.write(content)
 
 
+def process_line_compression(buffer_line:"str", output_file, table):
+    """Transform :buffer_line: into the new code, per-byte, based on :table:
+    and save the new byte-stream into :output_file:."""
+    bitarray = []
+    for char in buffer_line:
+        encoded_char = table[char]
+        bitarray.extend(int(chr(x)) for x in encoded_char)  # TODO: process by buffer size
+    bitarray = ''.join(map(str, bitarray))
+    stream = hex(int(bitarray, 2))[2:]
+    if not len(stream) % 2 == 0:
+        stream = stream + '0'
+    #import pdb;  pdb.set_trace()
+    output_file.write(binascii.a2b_hex(stream))
+
+
+def compress_and_save_content(input_filename:"str", output_file: "file",
+                              table: "dict"):
+    """Opens and processes <input_filename>. Iterates over the file and writes
+    the contents on output_file."""
+    with open(input_filename, 'r') as f:
+        buff = f.read(BUFF_SIZE)
+        while buff:
+            process_line_compression(buff, output_file, table)
+            buff = f.read(BUFF_SIZE)
+
+
 def _sizeof(code):
     sizes = {'i': 4, 'c': 1, 'L': 4}
     return sizes.get(code, 1)
@@ -115,6 +144,8 @@ def save_compressed_file(filename, table):
     new_file = _brand_filename(filename)
     with open(new_file, 'wb') as f:
         save_table(f, table)
+        compress_and_save_content(filename, f, table)
+
 
 
 def retrieve_compressed_file(filename):
