@@ -4,8 +4,8 @@ import binascii
 from collections import Counter
 
 ENC = 'utf-8'
-BYTES = 8
-BUFF_SIZE = 1024 * BYTES
+BYTE = 8
+BUFF_SIZE = 1024
 
 
 class CharNode(object):
@@ -100,9 +100,11 @@ def process_line_compression(buffer_line:"str", output_file, table):
         encoded_char = table[char]
         bitarray.extend(int(chr(x)) for x in encoded_char)  # TODO: process by buffer size
     bitarray = ''.join(map(str, bitarray))
+    # Add a sentinel first bit
+    bitarray = '1' + bitarray
+    # TODO: flag EOF
+    bitarray += '0' * (BYTE - (len(bitarray) % BYTE))  #0-pad
     stream = hex(int(bitarray, 2))[2:]
-    if not len(stream) % 2 == 0:
-        stream = stream + '0'
     #import pdb;  pdb.set_trace()
     output_file.write(binascii.a2b_hex(stream))
 
@@ -111,11 +113,13 @@ def compress_and_save_content(input_filename:"str", output_file: "file",
                               table: "dict"):
     """Opens and processes <input_filename>. Iterates over the file and writes
     the contents on output_file."""
+
     with open(input_filename, 'r') as f:
         buff = f.read(BUFF_SIZE)
         while buff:
             process_line_compression(buff, output_file, table)
             buff = f.read(BUFF_SIZE)
+    return
 
 
 def _sizeof(code):
@@ -155,17 +159,16 @@ def decode_file_content(compfile, table):
     binary_content = compfile.read()  # TODO: buffer
     cont = binascii.hexlify(binary_content)
     bitarray = bin(int(cont, 16))[2:]
+    # Ignore first bit, sentinel
+    bitarray = bitarray[1:]
     i, j = 0, 1
     part = bitarray[i:j]
     newchars = []
-    #import pdb;  pdb.set_trace()
     while part:
         char = table.get(bitarray[i:j], False)
-        while not char:
+        while not char and bitarray[i:j]:
             j += 1
             char = table.get(bitarray[i:j], False)
-            if not bitarray[i:j]:
-                break
         newchars.append(char)  # TODO: buffer
         i, j = j, j + 1
         part = bitarray[i:j]
