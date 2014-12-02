@@ -113,7 +113,6 @@ def compress_and_save_content(input_filename:"str", output_file: "file",
                               table: "dict"):
     """Opens and processes <input_filename>. Iterates over the file and writes
     the contents on output_file."""
-
     with open(input_filename, 'r') as f:
         buff = f.read(BUFF_SIZE)
         while buff:
@@ -142,17 +141,30 @@ def _brand_filename(filename):
     return "{}.comp".format(filename)
 
 
-def save_compressed_file(filename, table):
+def _save_checksum(ofile, checksum):
+    """Persist the number of bytes as the first byte in <ofile>."""
+    ofile.write(struct.pack('L', checksum))
+    return
+
+
+def _retrieve_checksum(ifile):
+    rawdata = ifile.read(_sizeof('L'))
+    return struct.unpack('L', rawdata)[0]
+
+
+def save_compressed_file(filename, table, checksum):
     """Given the original file by its <filename>, save a new one.
     <table> contains the new codes for each character on <filename>"""
     new_file = _brand_filename(filename)
+    #import pdb;  pdb.set_trace()
     with open(new_file, 'wb') as f:
+        _save_checksum(f, checksum)
         save_table(f, table)
         compress_and_save_content(filename, f, table)
     return
 
 
-def decode_file_content(compfile, table):
+def decode_file_content(compfile, table, checksum):
     """Reconstruct the remaining part of the <compfile>, starting right after
     the metadata, decoding each bit according to the <table>."""
     new_filename = "{}.extracted".format(compfile.name)
@@ -164,12 +176,16 @@ def decode_file_content(compfile, table):
     i, j = 0, 1
     part = bitarray[i:j]
     newchars = []
+    restored = 0  # bytes
     while part:
         char = table.get(bitarray[i:j], False)
         while not char and bitarray[i:j]:
             j += 1
             char = table.get(bitarray[i:j], False)
         newchars.append(char)  # TODO: buffer
+        restored += 1
+        if restored == checksum:
+            break
         i, j = j, j + 1
         part = bitarray[i:j]
     print("Writing extracted file")
@@ -187,8 +203,9 @@ def retrieve_compressed_file(filename):
     """EXTRACT - Reconstruct the original file from the compressed copy."""
     fname = _brand_filename(filename)
     with open(fname, 'rb') as f:
+        checksum = _retrieve_checksum(f)
         t = retrieve_table(f)
         #print("Retrieved table:\n{}".format(t))
         table = _reorganize_table_keys(t)
-        decode_file_content(f, table)
+        decode_file_content(f, table, checksum)
     return

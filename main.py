@@ -15,10 +15,11 @@ def main():
 def compress(filename):
     with open(filename, 'r') as f:
         freqs = process_frequencies(f.read())
+    checksum = sum(c.freq for c in freqs)  # bytes
     t = create_tree_code(freqs)
     table = parse_tree_code(t)
     #print("Original:\n {}".format(table))
-    save_compressed_file(filename, table)
+    save_compressed_file(filename, table, checksum)
     retrieve_compressed_file(filename)
 
 
