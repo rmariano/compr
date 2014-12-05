@@ -92,7 +92,7 @@ def save_table(dest_file, table):
     dest_file.write(content)
 
 
-def process_line_compression(buffer_line:"str", output_file, table):
+def process_line_compression(buffer_line: "str", output_file, table):
     """Transform :buffer_line: into the new code, per-byte, based on :table:
     and save the new byte-stream into :output_file:."""
     bitarray = []
@@ -102,14 +102,12 @@ def process_line_compression(buffer_line:"str", output_file, table):
     bitarray = ''.join(map(str, bitarray))
     # Add a sentinel first bit
     bitarray = '1' + bitarray
-    # TODO: flag EOF
-    bitarray += '0' * (BYTE - (len(bitarray) % BYTE))  #0-pad
+    bitarray += '0' * (BYTE - (len(bitarray) % BYTE))  # 0-pad
     stream = hex(int(bitarray, 2))[2:]
-    #import pdb;  pdb.set_trace()
     output_file.write(binascii.a2b_hex(stream))
 
 
-def compress_and_save_content(input_filename:"str", output_file: "file",
+def compress_and_save_content(input_filename: "str", output_file: "file",
                               table: "dict"):
     """Opens and processes <input_filename>. Iterates over the file and writes
     the contents on output_file."""
@@ -156,7 +154,6 @@ def save_compressed_file(filename, table, checksum):
     """Given the original file by its <filename>, save a new one.
     <table> contains the new codes for each character on <filename>"""
     new_file = _brand_filename(filename)
-    #import pdb;  pdb.set_trace()
     with open(new_file, 'wb') as f:
         _save_checksum(f, checksum)
         save_table(f, table)
@@ -188,7 +185,6 @@ def decode_file_content(compfile, table, checksum):
             break
         i, j = j, j + 1
         part = bitarray[i:j]
-    print("Writing extracted file")
     with open(new_filename, 'w+') as output_file:
         output_file.write(''.join(newchars))
     return
@@ -205,7 +201,6 @@ def retrieve_compressed_file(filename):
     with open(fname, 'rb') as f:
         checksum = _retrieve_checksum(f)
         t = retrieve_table(f)
-        #print("Retrieved table:\n{}".format(t))
         table = _reorganize_table_keys(t)
         decode_file_content(f, table, checksum)
     return

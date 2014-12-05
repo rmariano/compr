@@ -18,8 +18,10 @@ def compress(filename):
     checksum = sum(c.freq for c in freqs)  # bytes
     t = create_tree_code(freqs)
     table = parse_tree_code(t)
-    #print("Original:\n {}".format(table))
     save_compressed_file(filename, table, checksum)
+
+
+def extract(filename):
     retrieve_compressed_file(filename)
 
 
