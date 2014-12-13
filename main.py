@@ -1,4 +1,5 @@
 import sys
+import argparse
 from core import (
     process_frequencies,
     create_tree_code,
@@ -23,6 +24,19 @@ def compress(filename):
 
 def extract(filename):
     retrieve_compressed_file(filename)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Compress text files.")
+    parser.add_argument('file', type=str,
+                        help="Name of the file to process")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-c', '--compress', action='store_true',
+                       help="Compress the file")
+    group.add_argument('-x', '--extract', action='store_true',
+                       help="Extract the file")
+    args = parser.parse_args()
+    return vars(args)
 
 
 if __name__ == '__main__':
