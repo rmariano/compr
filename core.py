@@ -83,9 +83,8 @@ def save_table(dest_file, table):
     """Store the table in the destination file.
     c: char
     L: code of c (unsigned Long)"""
-    content = None  # of the file
     offset = len(table)
-    tokens = [(bytes(char, encoding=ENC), v) for char, v in table.items()]
+    tokens = [(bytes(char, encoding=ENC), b'1' + v) for char, v in table.items()]
     content = struct.pack('i', offset)
     content += struct.pack('{}c'.format(offset), *[t[0] for t in tokens])
     content += struct.pack('{}L'.format(offset), *[int(t[1], base=2) for t in tokens])
@@ -132,7 +131,7 @@ def retrieve_table(dest_file):
     codes = dest_file.read(offset * _sizeof('L'))
     chars = struct.unpack('{}c'.format(offset), chars)
     codes = struct.unpack('{}L'.format(offset), codes)
-    return {bin(code): str(char, encoding=ENC) for char, code in zip(chars, codes)}
+    return {bin(code)[1:]: str(char, encoding=ENC) for char, code in zip(chars, codes)}
 
 
 def _brand_filename(filename):
