@@ -1,4 +1,3 @@
-import sys
 import argparse
 from core import (
     process_frequencies,
@@ -9,11 +8,15 @@ from core import (
 )
 
 
-def main():
-    pass
+def main(filename, extract=False, compress=True):
+    if compress:
+        compress_file(filename)
+    if extract:
+        extract_file(filename)
+    return 0
 
 
-def compress(filename):
+def compress_file(filename):
     with open(filename, 'r') as f:
         freqs = process_frequencies(f.read())
     checksum = sum(c.freq for c in freqs)  # bytes
@@ -22,13 +25,13 @@ def compress(filename):
     save_compressed_file(filename, table, checksum)
 
 
-def extract(filename):
+def extract_file(filename):
     retrieve_compressed_file(filename)
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Compress text files.")
-    parser.add_argument('file', type=str,
+    parser.add_argument('filename', type=str,
                         help="Name of the file to process")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-c', '--compress', action='store_true',
@@ -40,4 +43,5 @@ def parse_arguments():
 
 
 if __name__ == '__main__':
-    compress(sys.argv[1])
+    args = parse_arguments()
+    main(**args)

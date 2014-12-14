@@ -196,8 +196,7 @@ def _reorganize_table_keys(table):
 
 def retrieve_compressed_file(filename):
     """EXTRACT - Reconstruct the original file from the compressed copy."""
-    fname = _brand_filename(filename)
-    with open(fname, 'rb') as f:
+    with open(filename, 'rb') as f:
         checksum = _retrieve_checksum(f)
         t = retrieve_table(f)
         table = _reorganize_table_keys(t)
