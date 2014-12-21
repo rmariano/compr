@@ -163,6 +163,7 @@ def save_compressed_file(filename, table, checksum):
 def decode_file_content(compfile, table, checksum):
     """Reconstruct the remaining part of the <compfile>, starting right after
     the metadata, decoding each bit according to the <table>."""
+    import pdb;  pdb.set_trace()
     new_filename = "{}.extracted".format(compfile.name)
     binary_content = compfile.read()  # TODO: buffer
     cont = binascii.hexlify(binary_content)

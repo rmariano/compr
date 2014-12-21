@@ -1,5 +1,5 @@
 import argparse
-from core import (
+from .core import (
     process_frequencies,
     create_tree_code,
     parse_tree_code,
