@@ -1,3 +1,4 @@
+import glob
 import os
 import subprocess
 import tempfile
@@ -18,17 +19,17 @@ class SmokeTest(BaseTest):
     """Test that a reconstructed file (a file that was decompressed from
     a previous compression process) is identical to the original."""
 
-    def test_first_string(self):
+    def test_compress_and_retrieve_datasets(self):
         """Content must be unmodified, meaning the extracted file must exactly
         match the content prior compression."""
-        source = os.path.join(self.store, 'test001.txt')
-        target = tempfile.NamedTemporaryFile().name
-        # Compress
-        main(source, compress=True, dest_file=target)
-        # Now extract
-        extracted = tempfile.NamedTemporaryFile().name
-        main(target, extract=True, compress=False, dest_file=extracted)
-        self.assertTrue(_files_identical(source, extracted))
+        for source in glob.glob(os.path.join(self.store, '*.txt')):
+            target = tempfile.NamedTemporaryFile().name
+            # Compress
+            main(source, compress=True, dest_file=target)
+            # Now extract
+            extracted = tempfile.NamedTemporaryFile().name
+            main(target, extract=True, compress=False, dest_file=extracted)
+            self.assertTrue(_files_identical(source, extracted), source)
 
 
 if __name__ == '__main__':
