@@ -8,25 +8,26 @@ from .core import (
 )
 
 
-def main(filename, extract=False, compress=True):
+def main(filename, extract=False, compress=True, dest_file=None):
+    assert extract is not compress, "Cannot both extract & compress"
     if compress:
-        compress_file(filename)
+        compress_file(filename, dest_file)
     if extract:
-        extract_file(filename)
+        extract_file(filename, dest_file)
     return 0
 
 
-def compress_file(filename):
+def compress_file(filename, dest_file=None):
     with open(filename, 'r') as f:
         freqs = process_frequencies(f.read())
     checksum = sum(c.freq for c in freqs)  # bytes
     t = create_tree_code(freqs)
     table = parse_tree_code(t)
-    save_compressed_file(filename, table, checksum)
+    save_compressed_file(filename, table, checksum, dest_file)
 
 
-def extract_file(filename):
-    retrieve_compressed_file(filename)
+def extract_file(filename, dest_file=None):
+    retrieve_compressed_file(filename, dest_file)
 
 
 def parse_arguments():

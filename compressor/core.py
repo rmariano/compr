@@ -149,10 +149,10 @@ def _retrieve_checksum(ifile):
     return struct.unpack('L', rawdata)[0]
 
 
-def save_compressed_file(filename, table, checksum):
+def save_compressed_file(filename, table, checksum, dest_file=None):
     """Given the original file by its <filename>, save a new one.
     <table> contains the new codes for each character on <filename>"""
-    new_file = _brand_filename(filename)
+    new_file = dest_file if dest_file else _brand_filename(filename)
     with open(new_file, 'wb') as f:
         _save_checksum(f, checksum)
         save_table(f, table)
@@ -163,8 +163,6 @@ def save_compressed_file(filename, table, checksum):
 def decode_file_content(compfile, table, checksum):
     """Reconstruct the remaining part of the <compfile>, starting right after
     the metadata, decoding each bit according to the <table>."""
-    import pdb;  pdb.set_trace()
-    new_filename = "{}.extracted".format(compfile.name)
     binary_content = compfile.read()  # TODO: buffer
     cont = binascii.hexlify(binary_content)
     bitarray = bin(int(cont, 16))[2:]
@@ -185,9 +183,7 @@ def decode_file_content(compfile, table, checksum):
             break
         i, j = j, j + 1
         part = bitarray[i:j]
-    with open(new_filename, 'w+') as output_file:
-        output_file.write(''.join(newchars))
-    return
+    return ''.join(newchars)
 
 
 def _reorganize_table_keys(table):
@@ -195,11 +191,15 @@ def _reorganize_table_keys(table):
     return {k[2:]: v for k, v in table.items()}
 
 
-def retrieve_compressed_file(filename):
-    """EXTRACT - Reconstruct the original file from the compressed copy."""
+def retrieve_compressed_file(filename, dest_file=None):
+    """EXTRACT - Reconstruct the original file from the compressed copy.
+    Write the output in the indicated <dest_file>"""
     with open(filename, 'rb') as f:
         checksum = _retrieve_checksum(f)
         t = retrieve_table(f)
         table = _reorganize_table_keys(t)
-        decode_file_content(f, table, checksum)
-    return
+        stream = decode_file_content(f, table, checksum)
+        # Dump the decoded extraction into its destination
+        dest_filename = dest_file if dest_file else "{}.extr".format(filename)
+        with open(dest_filename, 'w+') as out:
+            out.write(stream)
