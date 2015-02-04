@@ -2,10 +2,29 @@ import heapq
 import struct
 import binascii
 from collections import Counter
+import sys
 
 ENC = 'utf-8'
 BYTE = 8
 BUFF_SIZE = 1024
+
+
+def endianess_prefix():
+    return '<' if sys.byteorder == 'little' else '>'
+
+
+def patched_struct(f):
+    """Prefix the endian code according to the architecture by patching the
+    library."""
+    def wrapped(*args):
+        code = args[0]
+        code = endianess_prefix() + code
+        return f(code, *args[1:])
+    return wrapped
+
+
+struct.pack = patched_struct(struct.pack)
+struct.unpack = patched_struct(struct.unpack)
 
 
 class CharNode(object):
