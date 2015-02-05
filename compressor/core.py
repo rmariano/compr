@@ -6,7 +6,7 @@ import sys
 
 ENC = 'utf-8'
 BYTE = 8
-BUFF_SIZE = 1024
+BUFF_SIZE = 1024 * 9
 
 
 def endianess_prefix():
