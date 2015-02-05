@@ -39,6 +39,8 @@ def parse_arguments():
                        help="Compress the file")
     group.add_argument('-x', '--extract', action='store_true',
                        help="Extract the file")
+    parser.add_argument('-d', '--dest-file', type=str, default=None,
+                        help="Destination File Name")
     args = parser.parse_args()
     return vars(args)
 
