@@ -6,7 +6,7 @@ import sys
 
 ENC = 'utf-8'
 BYTE = 8
-BUFF_SIZE = 1024 * 9
+BUFF_SIZE = 1024
 
 
 def endianess_prefix():
@@ -110,23 +110,32 @@ def save_table(dest_file, table):
     dest_file.write(content)
 
 
-def process_line_compression(buffer_line: "str", output_file, table):
+def process_line_compression(buffer_line, output_file, table):
     """Transform :buffer_line: into the new code, per-byte, based on :table:
     and save the new byte-stream into :output_file:."""
     bitarray = []
+    buff = []
+    chr_buffer = b''
     for char in buffer_line:
         encoded_char = table[char]
+        chr_buffer += encoded_char
         bitarray.extend(int(chr(x)) for x in encoded_char)  # TODO: process by buffer size
     bitarray = ''.join(map(str, bitarray))
     # Add a sentinel first bit
     bitarray = '1' + bitarray
     bitarray += '0' * (BYTE - (len(bitarray) % BYTE))  # 0-pad
+
     stream = hex(int(bitarray, 2))[2:]
-    output_file.write(binascii.a2b_hex(stream))
+    block = binascii.a2b_hex(stream)
+    block_length = len(bitarray) // BYTE
+    original_length = len(buffer_line)
+
+    output_file.write(struct.pack('I', block_length ))
+    output_file.write(struct.pack('I', original_length))
+    output_file.write(block)
 
 
-def compress_and_save_content(input_filename: "str", output_file: "file",
-                              table: "dict"):
+def compress_and_save_content(input_filename, output_file, table):
     """Opens and processes <input_filename>. Iterates over the file and writes
     the contents on output_file."""
     with open(input_filename, 'r') as f:
@@ -138,7 +147,7 @@ def compress_and_save_content(input_filename: "str", output_file: "file",
 
 
 def _sizeof(code):
-    sizes = {'i': 4, 'c': 1, 'L': 4}
+    sizes = {'i': 4, 'c': 1, 'L': 4, 'I': 4}
     return sizes.get(code, 1)
 
 
@@ -179,17 +188,15 @@ def save_compressed_file(filename, table, checksum, dest_file=None):
     return
 
 
-def decode_file_content(compfile, table, checksum):
-    """Reconstruct the remaining part of the <compfile>, starting right after
-    the metadata, decoding each bit according to the <table>."""
-    binary_content = compfile.read()  # TODO: buffer
+def _decode_block(binary_content, table, block_length):
+    """Transform the compressed content of a block into the original text."""
+    newchars = []
     cont = binascii.hexlify(binary_content)
     bitarray = bin(int(cont, 16))[2:]
     # Ignore first bit, sentinel
     bitarray = bitarray[1:]
     i, j = 0, 1
     part = bitarray[i:j]
-    newchars = []
     restored = 0  # bytes
     while part:
         char = table.get(bitarray[i:j], False)
@@ -198,11 +205,30 @@ def decode_file_content(compfile, table, checksum):
             char = table.get(bitarray[i:j], False)
         newchars.append(char)  # TODO: buffer
         restored += 1
-        if restored == checksum:
+        if restored == block_length:
             break
         i, j = j, j + 1
         part = bitarray[i:j]
-    return ''.join(newchars)
+    return ''.join(newchars)[:block_length]
+
+
+
+def decode_file_content(compfile, table, checksum):
+    """Reconstruct the remaining part of the <compfile>, starting right after
+    the metadata, decoding each bit according to the <table>."""
+    original_stream = ''
+    next_block = compfile.read(_sizeof('I'))
+    while len(original_stream) < checksum and next_block:
+        block_size, *_ = struct.unpack('I', next_block)
+        block_length, *_ = struct.unpack('I', compfile.read(_sizeof('I')))
+        binary_content = compfile.read(block_size)
+        retrieved = _decode_block(binary_content, table, block_length)
+
+        if len(original_stream + retrieved) > checksum:
+            break
+        original_stream += retrieved
+        next_block = compfile.read(_sizeof('I'))
+    return original_stream
 
 
 def _reorganize_table_keys(table):
@@ -217,8 +243,8 @@ def retrieve_compressed_file(filename, dest_file=None):
         checksum = _retrieve_checksum(f)
         t = retrieve_table(f)
         table = _reorganize_table_keys(t)
+        dest_filename = dest_file if dest_file else "{}.extr".format(filename)
         stream = decode_file_content(f, table, checksum)
         # Dump the decoded extraction into its destination
-        dest_filename = dest_file if dest_file else "{}.extr".format(filename)
         with open(dest_filename, 'w+') as out:
             out.write(stream)

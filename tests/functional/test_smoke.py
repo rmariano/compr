@@ -20,7 +20,7 @@ class SmokeTest(BaseTest):
     a previous compression process) is identical to the original."""
 
     def test_compress_and_retrieve_datasets(self):
-        """Content must be unmodified, meaning the extracted file must exactly
+        """Content must be unmodified, meaning the extracted file must
         match the content prior compression."""
         for source in glob.glob(os.path.join(self.store, '*.txt')):
             target = tempfile.NamedTemporaryFile().name
