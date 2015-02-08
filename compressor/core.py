@@ -119,7 +119,7 @@ def process_line_compression(buffer_line, output_file, table):
     for char in buffer_line:
         encoded_char = table[char]
         chr_buffer += encoded_char
-        bitarray.extend(int(chr(x)) for x in encoded_char)  # TODO: process by buffer size
+        bitarray.extend(int(chr(x)) for x in encoded_char)
     bitarray = ''.join(map(str, bitarray))
     # Add a sentinel first bit
     bitarray = '1' + bitarray
@@ -130,7 +130,7 @@ def process_line_compression(buffer_line, output_file, table):
     block_length = len(bitarray) // BYTE
     original_length = len(buffer_line)
 
-    output_file.write(struct.pack('I', block_length ))
+    output_file.write(struct.pack('I', block_length))
     output_file.write(struct.pack('I', original_length))
     output_file.write(block)
 
@@ -203,14 +203,13 @@ def _decode_block(binary_content, table, block_length):
         while not char and bitarray[i:j]:
             j += 1
             char = table.get(bitarray[i:j], False)
-        newchars.append(char)  # TODO: buffer
+        newchars.append(char)
         restored += 1
         if restored == block_length:
             break
         i, j = j, j + 1
         part = bitarray[i:j]
     return ''.join(newchars)[:block_length]
-
 
 
 def decode_file_content(compfile, table, checksum):
