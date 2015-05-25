@@ -3,7 +3,7 @@ import os
 import subprocess
 import tempfile
 from tests import BaseTest
-from compressor.main import main
+from compressor import main_engine
 
 
 def _files_identical(*files):
@@ -25,10 +25,10 @@ class SmokeTest(BaseTest):
         for source in glob.glob(os.path.join(self.store, '*.txt')):
             target = tempfile.NamedTemporaryFile().name
             # Compress
-            main(source, compress=True, dest_file=target)
+            main_engine(source, compress=True, dest_file=target)
             # Now extract
             extracted = tempfile.NamedTemporaryFile().name
-            main(target, extract=True, compress=False, dest_file=extracted)
+            main_engine(target, extract=True, compress=False, dest_file=extracted)
             self.assertTrue(_files_identical(source, extracted), source)
 
 

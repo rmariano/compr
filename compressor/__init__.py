@@ -1,20 +1,12 @@
 import argparse
-from .core import (  # TODO: review abs import not working
+import sys
+from .core import (
     process_frequencies,
     create_tree_code,
     parse_tree_code,
     save_compressed_file,
     retrieve_compressed_file,
 )
-
-
-def main(filename, extract=False, compress=True, dest_file=None):
-    assert extract is not compress, "Cannot both extract & compress"
-    if compress:
-        compress_file(filename, dest_file)
-    if extract:
-        extract_file(filename, dest_file)
-    return 0
 
 
 def compress_file(filename, dest_file=None):
@@ -45,6 +37,18 @@ def parse_arguments():
     return vars(args)
 
 
+def main_engine(filename, extract=False, compress=True, dest_file=None):
+    assert extract is not compress, "Cannot both extract & compress"
+    if compress:
+        compress_file(filename, dest_file)
+    if extract:
+        extract_file(filename, dest_file)
+    return 0
+
+
+def main():
+    main_engine(**parse_arguments())
+
+
 if __name__ == '__main__':
-    args = parse_arguments()
-    main(**args)
+    sys.exit(main())
