@@ -14,10 +14,12 @@ Development
 -----------
 
 .. code:: python
+
     python setup.py develop
 
 Run tests
 ---------
 
 .. code:: bash
+
     nosetests tests/unit tests/functional
