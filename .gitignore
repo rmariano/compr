@@ -3,3 +3,5 @@
 __pycache__/
 pycompress.egg-info/
 _tmp/
+build/
+dist/
