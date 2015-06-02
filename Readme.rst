@@ -10,6 +10,18 @@ the same means), resulting in the original one.
 It can be used as a program or imported as a package module,
 and use the functions defined on it.
 
+Installation
+------------
+
+.. code:: bash
+
+   pip install trenzalore
+
+
+Will install the package and leave an application named `pycompress` for using
+the command line utility.
+
+
 Development
 -----------
 

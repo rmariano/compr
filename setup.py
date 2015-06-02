@@ -7,9 +7,9 @@ with open('Readme.rst', 'r') as readme:
 
 
 setup(
-    name='pycompress',
+    name='trenzalore',
     version=VERSION,
-    description='Py3 sample text compression application',
+    description='Py3 text compression application',
     long_description=LONG_DESC,
     author='Mariano Anaya',
     author_email='marianoanaya@gmail.com',
