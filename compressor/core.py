@@ -1,16 +1,20 @@
 import heapq
 import struct
 import binascii
-from collections import Counter
 import sys
+from collections import Counter
+
 
 ENC = 'utf-8'
 BYTE = 8
 BUFF_SIZE = 1024
 
 
-def endianess_prefix():
-    return '<' if sys.byteorder == 'little' else '>'
+def endianess_prefix(parm_type=str):
+    value = '<' if sys.byteorder == 'little' else '>'
+    if parm_type is bytes:
+        return bytes(value, encoding=ENC)
+    return value
 
 
 def patched_struct(f):
@@ -18,7 +22,12 @@ def patched_struct(f):
     library."""
     def wrapped(*args):
         code = args[0]
-        code = endianess_prefix() + code
+        endian = endianess_prefix(type(code))
+        assert type(code) is type(endian), "Type mismatch: {} and {}".format(type(code), type(endian))
+        if not code.startswith(endian):
+            # Note: it is NOT possible to use `.format` here, must be `+`
+            # values can be bytes or str
+            code = endian + code
         return f(code, *args[1:])
     return wrapped
 

@@ -1,20 +1,13 @@
 import argparse
-from .core import (  # TODO: review abs import not working
+import sys
+from .core import (
     process_frequencies,
     create_tree_code,
     parse_tree_code,
     save_compressed_file,
     retrieve_compressed_file,
 )
-
-
-def main(filename, extract=False, compress=True, dest_file=None):
-    assert extract is not compress, "Cannot both extract & compress"
-    if compress:
-        compress_file(filename, dest_file)
-    if extract:
-        extract_file(filename, dest_file)
-    return 0
+from .__version__ import VERSION
 
 
 def compress_file(filename, dest_file=None):
@@ -31,7 +24,10 @@ def extract_file(filename, dest_file=None):
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Compress text files.")
+    parser = argparse.ArgumentParser(
+        prog='PyCompress',
+        description="Compress text files.",
+    )
     parser.add_argument('filename', type=str,
                         help="Name of the file to process")
     group = parser.add_mutually_exclusive_group(required=True)
@@ -41,10 +37,24 @@ def parse_arguments():
                        help="Extract the file")
     parser.add_argument('-d', '--dest-file', type=str, default=None,
                         help="Destination File Name")
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {version}'.format(version=VERSION))
     args = parser.parse_args()
     return vars(args)
 
 
+def main_engine(filename, extract=False, compress=True, dest_file=None):
+    assert extract is not compress, "Cannot both extract & compress"
+    if compress:
+        compress_file(filename, dest_file)
+    if extract:
+        extract_file(filename, dest_file)
+    return 0
+
+
+def main():
+    main_engine(**parse_arguments())
+
+
 if __name__ == '__main__':
-    args = parse_arguments()
-    main(**args)
+    sys.exit(main())
