@@ -7,6 +7,7 @@ from .core import (
     save_compressed_file,
     retrieve_compressed_file,
 )
+from .__version__ import VERSION
 
 
 def compress_file(filename, dest_file=None):
@@ -23,7 +24,10 @@ def extract_file(filename, dest_file=None):
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Compress text files.")
+    parser = argparse.ArgumentParser(
+        prog='PyCompress',
+        description="Compress text files.",
+    )
     parser.add_argument('filename', type=str,
                         help="Name of the file to process")
     group = parser.add_mutually_exclusive_group(required=True)
@@ -33,6 +37,8 @@ def parse_arguments():
                        help="Extract the file")
     parser.add_argument('-d', '--dest-file', type=str, default=None,
                         help="Destination File Name")
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {version}'.format(version=VERSION))
     args = parser.parse_args()
     return vars(args)
 
