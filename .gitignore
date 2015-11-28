@@ -6,3 +6,6 @@ _tmp/
 build/
 dist/
 trenzalore.egg-info/
+.cache/
+.coverage
+htmlcov/
