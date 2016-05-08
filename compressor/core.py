@@ -75,6 +75,15 @@ class CharNode(object):
     """
 
     def __init__(self, value, freq, left=None, right=None):
+        """
+        Represent a character as a node in a tree.
+
+        :param value: the original character
+        :param freq:  float with the occurrence average of `value`
+                      in the processed text.
+        :param left:  left child of this node.
+        :param right: right child of this node in the tree.
+        """
         self.value = value
         self.freq = freq
         self.left = left
@@ -117,9 +126,13 @@ class CharNode(object):
 
 def create_tree_code(C):
     """
-    Receives a :list: of :CharNode: (characters) C,
+    Receives a :list: of :CharNode: (characters) charset,
     namely leaves in the tree, and returns a tree with the corresponding
     prefix-free code.
+
+    :param charset: iterable with all the characters to process.
+    :return:        iterable with a tree of the prefix-free code
+                    for the charset.
     """
     n = len(C)
     Q = C
@@ -134,10 +147,18 @@ def create_tree_code(C):
 
 
 def parse_tree_code(tree, table=None, code=b''):
-    """Given the tree with the chars-frequency processed, return a table that
+    """
+    Given the tree with the chars-frequency processed, return a table that
     maps each character with its binary representation on the new code:
-    left --> 0
-    right --> 1
+        left --> 0
+        right --> 1
+
+    :param tree:  iterable with the tree as returned by `create_tree_code`
+    :param table: Map with the translation for the characters to its code in
+                  the new system (prefix-free).
+    :param code:  The code prefix so far.
+
+    :return:      Mapping with with the original char to its new code.
     """
     table = table or {}
     LEFT = b'0'
@@ -151,16 +172,25 @@ def parse_tree_code(tree, table=None, code=b''):
 
 
 def process_frequencies(stream):
-    """Given a stream of text, return a list of CharNode with the frequencies
-    for each character."""
+    """
+    Given a stream of text, return a list of CharNode with the frequencies
+    for each character.
+
+    :param stream: sequence with all the characters.
+    """
     counts = Counter(stream)
     return [CharNode(value=value, freq=freq) for value, freq in counts.items()]
 
 
 def save_table(dest_file, table):
-    """Store the table in the destination file.
-    c: char
-    L: code of c (unsigned Long)"""
+    """
+    Store the table in the destination file.
+        c: char
+        L: code of c (unsigned Long)
+
+    :param dest_file: opened file where to write the `table`.
+    :param table:     Mapping table with the chars and their codes.
+    """
     offset = len(table)
     tokens = [(bytes(char, encoding=ENC), b'1' + v)
               for char, v in table.items()]
@@ -172,8 +202,14 @@ def save_table(dest_file, table):
 
 
 def process_line_compression(buffer_line, output_file, table):
-    """Transform :buffer_line: into the new code, per-byte, based on :table:
-    and save the new byte-stream into :output_file:."""
+    """
+    Transform `buffer_line` into the new code, per-byte, based on `table`
+    and save the new byte-stream into `output_file`.
+
+    :param buffer_line: a chunk of the text to process.
+    :param output_file: The opened file where to write the result.
+    :param table:       Translation table for the characters in `buffer_line`.
+    """
     bitarray = []
     buff = []
     chr_buffer = b''
@@ -213,8 +249,10 @@ def _sizeof(code):
 
 
 def retrieve_table(dest_file):
-    """Read the binary file, and return the translation table as a reversed
-    dict."""
+    """
+    Read the binary file, and return the translation table as a reversed
+    dict.
+    """
     offset, *_ = struct.unpack('i', dest_file.read(_sizeof('i')))
     chars = dest_file.read(offset * _sizeof('c'))
     codes = dest_file.read(offset * _sizeof('L'))
@@ -240,43 +278,49 @@ def _retrieve_checksum(ifile):
 
 
 def save_compressed_file(filename, table, checksum, dest_file=None):
-    """Given the original file by its <filename>, save a new one.
-    <table> contains the new codes for each character on <filename>"""
+    """
+    Given the original file by its `filename`, save a new one.
+    `table` contains the new codes for each character on `filename`.
+    """
     new_file = dest_file if dest_file else _brand_filename(filename)
-    with open(new_file, 'wb') as f:
-        _save_checksum(f, checksum)
-        save_table(f, table)
-        compress_and_save_content(filename, f, table)
+    with open(new_file, 'wb') as target:
+        _save_checksum(target, checksum)
+        save_table(target, table)
+        compress_and_save_content(filename, target, table)
     return
 
 
 def _decode_block(binary_content, table, block_length):
-    """Transform the compressed content of a block into the original text."""
+    """
+    Transform the compressed content of a block into the original text.
+    """
     newchars = []
     cont = binascii.hexlify(binary_content)
     bitarray = bin(int(cont, 16))[2:]
     # Ignore first bit, sentinel
     bitarray = bitarray[1:]
-    i, j = 0, 1
-    part = bitarray[i:j]
+    window_start, window_end = 0, 1
+    part = bitarray[window_start:window_end]
     restored = 0  # bytes
     while part:
-        char = table.get(bitarray[i:j], False)
-        while not char and bitarray[i:j]:
-            j += 1
-            char = table.get(bitarray[i:j], False)
+        char = table.get(bitarray[window_start:window_end], False)
+        while not char and bitarray[window_start:window_end]:
+            window_end += 1
+            char = table.get(bitarray[window_start:window_end], False)
         newchars.append(char)
         restored += 1
         if restored == block_length:
             break
-        i, j = j, j + 1
-        part = bitarray[i:j]
+        window_start, window_end = window_end, window_end + 1
+        part = bitarray[window_start:window_end]
     return ''.join(newchars)[:block_length]
 
 
 def decode_file_content(compfile, table, checksum):
-    """Reconstruct the remaining part of the <compfile>, starting right after
-    the metadata, decoding each bit according to the <table>."""
+    """
+    Reconstruct the remaining part of the <compfile>, starting right after
+    the metadata, decoding each bit according to the <table>.
+    """
     original_stream = ''
     next_block = compfile.read(_sizeof('I'))
     while len(original_stream) < checksum and next_block:
