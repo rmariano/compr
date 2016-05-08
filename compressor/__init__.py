@@ -7,7 +7,8 @@ from .core import (
     save_compressed_file,
     retrieve_compressed_file,
 )
-from .__version__ import VERSION
+
+VERSION = '0.1.0'
 
 
 def compress_file(filename, dest_file=None):
