@@ -10,7 +10,7 @@ import binascii
 import sys
 
 from collections import Counter
-from functools import wraps
+from functools import wraps, total_ordering
 
 
 ENC = 'utf-8'
@@ -69,6 +69,7 @@ struct.pack = patched_struct(struct.pack)
 struct.unpack = patched_struct(struct.unpack)
 
 
+@total_ordering
 class CharNode(object):
     """
     Object that wraps/encapsulates the definition of a character
@@ -91,9 +92,6 @@ class CharNode(object):
         self.left = left
         self.right = right
 
-    def __lt__(self, other):
-        return self.freq < other.freq
-
     def __le__(self, other):
         """
         Compare if this character is less or equal than another
@@ -104,17 +102,8 @@ class CharNode(object):
         """
         return self.freq <= other.freq
 
-    def __gt__(self, other):
-        return self.freq > other.freq
-
-    def __ge__(self, other):
-        return self.freq >= other.freq
-
     def __eq__(self, other):
         return self.freq == other.freq
-
-    def __ne__(self, other):
-        return self.freq != other.freq
 
     @property
     def leaf(self):
