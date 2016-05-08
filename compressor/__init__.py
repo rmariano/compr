@@ -27,11 +27,11 @@ def compress_file(filename: str, dest_file: str=None) -> None:
 
     :return:          None
     """
-    with open(filename, 'r') as f:
-        freqs = process_frequencies(f.read())
+    with open(filename, 'r') as source:
+        freqs = process_frequencies(source.read())
     checksum = sum(c.freq for c in freqs)  # bytes
-    t = create_tree_code(freqs)
-    table = parse_tree_code(t)
+    tree_code = create_tree_code(freqs)
+    table = parse_tree_code(tree_code)
     save_compressed_file(filename, table, checksum, dest_file)
 
 

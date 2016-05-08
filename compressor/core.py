@@ -16,6 +16,8 @@ from functools import wraps
 ENC = 'utf-8'
 BYTE = 8
 BUFF_SIZE = 1024
+LEFT = b'0'
+RIGHT = b'1'
 
 
 def endianess_prefix(parm_type=str):
@@ -124,7 +126,7 @@ class CharNode(object):
         return self.left is None and self.right is None
 
 
-def create_tree_code(C):
+def create_tree_code(charset):
     """
     Receives a :list: of :CharNode: (characters) charset,
     namely leaves in the tree, and returns a tree with the corresponding
@@ -134,16 +136,15 @@ def create_tree_code(C):
     :return:        iterable with a tree of the prefix-free code
                     for the charset.
     """
-    n = len(C)
-    Q = C
-    heapq.heapify(Q)
-    for _ in range(1, n):
-        z = CharNode('', 0)
-        z.left = x = heapq.heappop(Q)
-        z.right = y = heapq.heappop(Q)
-        z.freq = x.freq + y.freq
-        heapq.heappush(Q, z)
-    return heapq.heappop(Q)
+    alpha_heap = charset
+    heapq.heapify(alpha_heap)
+    for _ in range(1, len(charset)):
+        new_symbol = CharNode('', 0)
+        new_symbol.left = left_char = heapq.heappop(alpha_heap)
+        new_symbol.right = right_char = heapq.heappop(alpha_heap)
+        new_symbol.freq = left_char.freq + right_char.freq
+        heapq.heappush(alpha_heap, new_symbol)
+    return heapq.heappop(alpha_heap)
 
 
 def parse_tree_code(tree, table=None, code=b''):
@@ -161,8 +162,6 @@ def parse_tree_code(tree, table=None, code=b''):
     :return:      Mapping with with the original char to its new code.
     """
     table = table or {}
-    LEFT = b'0'
-    RIGHT = b'1'
     if tree.leaf:
         table[tree.value] = code
         return table
@@ -211,20 +210,20 @@ def process_line_compression(buffer_line, output_file, table):
     :param table:       Translation table for the characters in `buffer_line`.
     """
     bitarray = []
-    buff = []
     chr_buffer = b''
     for char in buffer_line:
         encoded_char = table[char]
         chr_buffer += encoded_char
         bitarray.extend(int(chr(x)) for x in encoded_char)
-    bitarray = ''.join(map(str, bitarray))
-    # Add a sentinel first bit
-    bitarray = '1' + bitarray
-    bitarray += '0' * (BYTE - (len(bitarray) % BYTE))  # 0-pad
 
-    stream = hex(int(bitarray, 2))[2:]
+    array_str = ''.join(str(x) for x in bitarray)
+    # Add a sentinel first bit
+    array_str = '1' + array_str
+    array_str += '0' * (BYTE - (len(array_str) % BYTE))  # 0-pad
+
+    stream = hex(int(array_str, 2))[2:]
     block = binascii.a2b_hex(stream)
-    block_length = len(bitarray) // BYTE
+    block_length = len(array_str) // BYTE
     original_length = len(buffer_line)
 
     output_file.write(struct.pack('I', block_length))
@@ -233,13 +232,15 @@ def process_line_compression(buffer_line, output_file, table):
 
 
 def compress_and_save_content(input_filename, output_file, table):
-    """Opens and processes <input_filename>. Iterates over the file and writes
-    the contents on output_file."""
-    with open(input_filename, 'r') as f:
-        buff = f.read(BUFF_SIZE)
+    """
+    Opens and processes <input_filename>. Iterates over the file and writes
+    the contents on output_file.
+    """
+    with open(input_filename, 'r') as source:
+        buff = source.read(BUFF_SIZE)
         while buff:
             process_line_compression(buff, output_file, table)
-            buff = f.read(BUFF_SIZE)
+            buff = source.read(BUFF_SIZE)
     return
 
 
@@ -342,14 +343,16 @@ def _reorganize_table_keys(table):
 
 
 def retrieve_compressed_file(filename, dest_file=None):
-    """EXTRACT - Reconstruct the original file from the compressed copy.
-    Write the output in the indicated <dest_file>"""
-    with open(filename, 'rb') as f:
-        checksum = _retrieve_checksum(f)
-        t = retrieve_table(f)
-        table = _reorganize_table_keys(t)
+    """
+    EXTRACT - Reconstruct the original file from the compressed copy.
+    Write the output in the indicated `dest_file`.
+    """
+    with open(filename, 'rb') as src:
+        checksum = _retrieve_checksum(src)
+        map_table = retrieve_table(src)
+        table = _reorganize_table_keys(map_table)
         dest_filename = dest_file if dest_file else "{}.extr".format(filename)
-        stream = decode_file_content(f, table, checksum)
+        stream = decode_file_content(src, table, checksum)
         # Dump the decoded extraction into its destination
         with open(dest_filename, 'w+') as out:
             out.write(stream)
