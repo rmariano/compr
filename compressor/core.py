@@ -1,7 +1,14 @@
+"""
+core.py
+Low-level functionality with the core of the process that the main
+program makes use of.
+It contains auxiliar functions.
+"""
 import heapq
 import struct
 import binascii
 import sys
+
 from collections import Counter
 
 

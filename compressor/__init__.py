@@ -1,3 +1,9 @@
+"""
+Compressor main module.
+Exposes the entry point to the program for executing as command line,
+as well as the main functions to be used as library.
+This module contains high-level functionality.
+"""
 import argparse
 import sys
 from .core import (
