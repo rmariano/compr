@@ -23,7 +23,8 @@ def patched_struct(f):
     def wrapped(*args):
         code = args[0]
         endian = endianess_prefix(type(code))
-        assert type(code) is type(endian), "Type mismatch: {} and {}".format(type(code), type(endian))
+        assert type(code) is type(endian), "Type mismatch: {} and {}".format(
+            type(code), type(endian))
         if not code.startswith(endian):
             # Note: it is NOT possible to use `.format` here, must be `+`
             # values can be bytes or str
@@ -112,10 +113,12 @@ def save_table(dest_file, table):
     c: char
     L: code of c (unsigned Long)"""
     offset = len(table)
-    tokens = [(bytes(char, encoding=ENC), b'1' + v) for char, v in table.items()]
+    tokens = [(bytes(char, encoding=ENC), b'1' + v)
+              for char, v in table.items()]
     content = struct.pack('i', offset)
     content += struct.pack('{}c'.format(offset), *[t[0] for t in tokens])
-    content += struct.pack('{}L'.format(offset), *[int(t[1], base=2) for t in tokens])
+    content += struct.pack('{}L'.format(offset),
+                           *[int(t[1], base=2) for t in tokens])
     dest_file.write(content)
 
 
@@ -168,7 +171,8 @@ def retrieve_table(dest_file):
     codes = dest_file.read(offset * _sizeof('L'))
     chars = struct.unpack('{}c'.format(offset), chars)
     codes = struct.unpack('{}L'.format(offset), codes)
-    return {bin(code)[1:]: str(char, encoding=ENC) for char, code in zip(chars, codes)}
+    return {bin(code)[1:]: str(char, encoding=ENC)
+            for char, code in zip(chars, codes)}
 
 
 def _brand_filename(filename):
