@@ -10,6 +10,7 @@ import binascii
 import sys
 
 from collections import Counter
+from functools import wraps
 
 
 ENC = 'utf-8'
@@ -18,16 +19,38 @@ BUFF_SIZE = 1024
 
 
 def endianess_prefix(parm_type=str):
+    """
+    Return the prefix to be used in struct.{pack,unpack} according
+    to the system architecture (little/big endian, 32/64 bits).
+
+    :param parm_type: str | bytes depending on the version
+    :return:          '<' for little endian
+                      '>' big endian
+    """
     value = '<' if sys.byteorder == 'little' else '>'
     if parm_type is bytes:
         return bytes(value, encoding=ENC)
     return value
 
 
-def patched_struct(f):
-    """Prefix the endian code according to the architecture by patching the
-    library."""
+def patched_struct(struct_function):
+    """
+    Prefix the endian code according to the architecture by patching the
+    library.
+
+    This decorator patches the function from the struct module, based on
+    the architecture of the running system.
+
+    :param struct_function: struct.pack | struct.unpack
+    :return:                decorated <struct_function>
+    """
+    @wraps(struct_function)
     def wrapped(*args):
+        """
+        Decorated version of the struct original function
+
+        :param args: The *args of the original function
+        """
         code = args[0]
         endian = endianess_prefix(type(code))
         assert type(code) is type(endian), "Type mismatch: {} and {}".format(
@@ -36,7 +59,7 @@ def patched_struct(f):
             # Note: it is NOT possible to use `.format` here, must be `+`
             # values can be bytes or str
             code = endian + code
-        return f(code, *args[1:])
+        return struct_function(code, *args[1:])
     return wrapped
 
 
@@ -45,6 +68,11 @@ struct.unpack = patched_struct(struct.unpack)
 
 
 class CharNode(object):
+    """
+    Object that wraps/encapsulates the definition of a character
+    in the text being processed.
+    Used for comparisson, and helper with its properties & methods.
+    """
 
     def __init__(self, value, freq, left=None, right=None):
         self.value = value
@@ -56,6 +84,13 @@ class CharNode(object):
         return self.freq < other.freq
 
     def __le__(self, other):
+        """
+        Compare if this character is less or equal than another
+        one of the same kind.
+
+        :param other: Another CharNode object with properties.
+        :return:      True if self <= other, False otherwise.
+        """
         return self.freq <= other.freq
 
     def __gt__(self, other):
@@ -72,13 +107,20 @@ class CharNode(object):
 
     @property
     def leaf(self):
+        """
+        Checks if the current node is a leaf in the tree. It is a leaf when it
+        does not have any children (neither left nor right).
+        :return: True if this node has no children, False otherwise.
+        """
         return self.left is None and self.right is None
 
 
 def create_tree_code(C):
-    """Receives a :list: of :CharNode: (characters) C,
+    """
+    Receives a :list: of :CharNode: (characters) C,
     namely leaves in the tree, and returns a tree with the corresponding
-    prefix-free code."""
+    prefix-free code.
+    """
     n = len(C)
     Q = C
     heapq.heapify(Q)
