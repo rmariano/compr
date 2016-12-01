@@ -10,6 +10,7 @@ clean:
 
 .PHONY: doc
 doc:
-	cd doc && make html && cd ..
+	@cd doc && make html && cd ..
+	xdg-open doc/_build/html/index.html
 
 .PHONY: all test clean
