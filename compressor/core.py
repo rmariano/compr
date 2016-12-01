@@ -1,8 +1,10 @@
 """
-core.py
+`compressor.core`
+
 Low-level functionality with the core of the process that the main
 program makes use of.
-It contains auxiliar functions.
+
+It contains auxiliary functions.
 """
 import heapq
 import struct
@@ -70,11 +72,11 @@ struct.unpack = patched_struct(struct.unpack)
 
 
 @total_ordering
-class CharNode(object):
+class CharNode:
     """
     Object that wraps/encapsulates the definition of a character
     in the text being processed.
-    Used for comparisson, and helper with its properties & methods.
+    Used for comparison, and helper with its properties & methods.
     """
 
     def __init__(self, value, freq, left=None, right=None):
@@ -97,8 +99,9 @@ class CharNode(object):
         Compare if this character is less or equal than another
         one of the same kind.
 
-        :param other: Another CharNode object with properties.
-        :return:      True if self <= other, False otherwise.
+        :param other: Another CharNode with properties.
+        :return:      self <= other
+        :rtype: bool
         """
         return self.freq <= other.freq
 
@@ -106,10 +109,11 @@ class CharNode(object):
         return self.freq == other.freq
 
     @property
-    def leaf(self):
+    def leaf(self) -> bool:
         """
         Checks if the current node is a leaf in the tree. It is a leaf when it
         does not have any children (neither left nor right).
+
         :return: True if this node has no children, False otherwise.
         """
         return self.left is None and self.right is None
@@ -122,6 +126,7 @@ def create_tree_code(charset):
     prefix-free code.
 
     :param charset: iterable with all the characters to process.
+
     :return:        iterable with a tree of the prefix-free code
                     for the charset.
     """
@@ -141,11 +146,13 @@ def create_tree_code(charset):
     return heapq.heappop(alpha_heap)
 
 
-def parse_tree_code(tree, table=None, code=b''):
+def parse_tree_code(tree, table=None, code=b'') -> dict:
     """
     Given the tree with the chars-frequency processed, return a table that
     maps each character with its binary representation on the new code:
+
         left --> 0
+
         right --> 1
 
     :param tree:  iterable with the tree as returned by `create_tree_code`
@@ -225,10 +232,15 @@ def process_line_compression(buffer_line, output_file, table):
     output_file.write(block)
 
 
-def compress_and_save_content(input_filename, output_file, table):
+def compress_and_save_content(input_filename: str,
+                              output_file: str, table: dict):
     """
     Opens and processes <input_filename>. Iterates over the file and writes
     the contents on output_file.
+
+    :param input_filename: the source to be compressed
+    :param output_file:    path to the file for the output
+    :param table:          mapping table for the char encoding
     """
     with open(input_filename, 'r') as source:
         buff = source.read(BUFF_SIZE)
@@ -246,7 +258,7 @@ def _sizeof(code):
 def retrieve_table(dest_file):
     """
     Read the binary file, and return the translation table as a reversed
-    dict.
+    dictionary.
     """
     offset, *_ = struct.unpack('i', dest_file.read(_sizeof('i')))
     chars = dest_file.read(offset * _sizeof('c'))
