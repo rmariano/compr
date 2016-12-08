@@ -34,4 +34,4 @@ Run tests
 
 .. code:: bash
 
-    nosetests tests/unit tests/functional
+    make test
