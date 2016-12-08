@@ -90,9 +90,12 @@ def main_engine(filename: str, extract: bool=False,
     return 0
 
 
-def main():
+def main() -> int:
     """
     Program cli
+
+    :return: Status code of the program.
+    :rtype: int
     """
     return main_engine(**parse_arguments())
 

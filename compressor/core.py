@@ -1,10 +1,12 @@
 """
-`compressor.core`
+
+``compressor.core``
 
 Low-level functionality with the core of the process that the main
 program makes use of.
 
 It contains auxiliary functions.
+
 """
 import heapq
 import struct
