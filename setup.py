@@ -2,21 +2,24 @@ from setuptools import setup
 from compressor import VERSION
 
 
-with open('Readme.rst', 'r') as readme:
+with open('README.rst', 'r') as readme:
     LONG_DESC = readme.read()
+
+with open('LICENSE', 'r') as license:
+    LICENSE = license.read()
 
 
 setup(
     name='trenzalore',
     version=VERSION,
-    description='Py3 text compression application',
+    description='Text compression tool',
     long_description=LONG_DESC,
     author='Mariano Anaya',
     author_email='marianoanaya@gmail.com',
     url='https://github.com/rmariano/compr',
     packages=('compressor', ),
     zip_safe=True,
-    license='MIT',
+    license=LICENSE,
     keywords='text compression',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

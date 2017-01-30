@@ -1,11 +1,11 @@
+PyCompress
+==========
+
 .. image:: https://img.shields.io/travis/rmariano/compr.svg?style=flat-square 
    :target: https://travis-ci.org/rmariano/compr
    :alt: CI Status
 
-.. begin
-
-PyCompress
-==========
+.. contents ::
 
 Pycompress is a package that implements a text compression algorithm. The program
 that implements this algorithm, allows the user to compress a text file, in a resulting
@@ -23,19 +23,14 @@ Installation
    pip install trenzalore
 
 
-Will install the package and leave an application named `pycompress` for using
+Will install the package and leave an application named ``pycompress`` for using
 the command line utility.
 
 
 Development
 -----------
 
-.. code:: python
-
-    python setup.py develop
-
-Run tests
----------
+Running tests:
 
 .. code:: bash
 
