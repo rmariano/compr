@@ -1,4 +1,9 @@
-==========
+.. image:: https://img.shields.io/travis/rmariano/compr.svg?style=flat-square 
+   :target: https://travis-ci.org/rmariano/compr
+   :alt: CI Status
+
+.. begin
+
 PyCompress
 ==========
 
