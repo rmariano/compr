@@ -16,5 +16,5 @@ dev:
 
 .PHONY: doc
 doc:
-	@cd doc && make html && cd ..
-	xdg-open doc/_build/html/index.html
+	make -C doc/ html
+	@xdg-open doc/_build/html/index.html
