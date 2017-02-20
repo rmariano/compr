@@ -13,8 +13,7 @@ from .core import (
     save_compressed_file,
     retrieve_compressed_file,
 )
-
-VERSION = '0.1.0'
+from compressor.constants import VERSION
 
 
 def compress_file(filename: str, dest_file: str=None) -> None:

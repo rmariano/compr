@@ -14,11 +14,7 @@ from collections import Counter
 from functools import total_ordering, wraps
 from typing import Callable, List, Sequence, io
 
-ENC = 'utf-8'
-BYTE = 8
-BUFF_SIZE = 1024
-LEFT = b'0'
-RIGHT = b'1'
+from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
 
 
 def endianess_prefix(parm_type=str) -> str:

@@ -1,5 +1,5 @@
 from setuptools import setup
-from compressor import VERSION
+from compressor.constants import VERSION
 
 
 with open('README.rst', 'r') as readme:
