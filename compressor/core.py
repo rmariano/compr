@@ -6,16 +6,13 @@ program makes use of.
 
 It contains auxiliary functions.
 """
+import binascii
 import heapq
 import struct
-import binascii
 import sys
-
 from collections import Counter
-from functools import wraps, total_ordering
-
+from functools import total_ordering, wraps
 from typing import Callable, List, Sequence, io
-
 
 ENC = 'utf-8'
 BYTE = 8
