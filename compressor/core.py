@@ -1,12 +1,10 @@
 """
-
 ``compressor.core``
 
 Low-level functionality with the core of the process that the main
 program makes use of.
 
 It contains auxiliary functions.
-
 """
 import heapq
 import struct
@@ -16,6 +14,8 @@ import sys
 from collections import Counter
 from functools import wraps, total_ordering
 
+from typing import Callable, List, Sequence, io
+
 
 ENC = 'utf-8'
 BYTE = 8
@@ -24,7 +24,7 @@ LEFT = b'0'
 RIGHT = b'1'
 
 
-def endianess_prefix(parm_type=str):
+def endianess_prefix(parm_type=str) -> str:
     """
     Return the prefix to be used in struct.{pack,unpack} according
     to the system architecture (little/big endian, 32/64 bits).
@@ -39,7 +39,7 @@ def endianess_prefix(parm_type=str):
     return value
 
 
-def patched_struct(struct_function):
+def patched_struct(struct_function: Callable) -> Callable:
     """
     Prefix the endian code according to the architecture by patching the
     library.
@@ -81,7 +81,7 @@ class CharNode:
     Used for comparison, and helper with its properties & methods.
     """
 
-    def __init__(self, value, freq, left=None, right=None):
+    def __init__(self, value, freq, left=None, right=None) -> None:
         """
         Represent a character as a node in a tree.
 
@@ -96,7 +96,7 @@ class CharNode:
         self.left = left
         self.right = right
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         """
         Compare if this character is less or equal than another
         one of the same kind.
@@ -107,7 +107,7 @@ class CharNode:
         """
         return self.freq <= other.freq
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.freq == other.freq
 
     @property
@@ -121,7 +121,7 @@ class CharNode:
         return self.left is None and self.right is None
 
 
-def create_tree_code(charset):
+def create_tree_code(charset: List[CharNode]) -> CharNode:
     """
     Receives a :list: of :CharNode: (characters) charset,
     namely leaves in the tree, and returns a tree with the corresponding
@@ -148,7 +148,8 @@ def create_tree_code(charset):
     return heapq.heappop(alpha_heap)
 
 
-def parse_tree_code(tree, table=None, code=b'') -> dict:
+def parse_tree_code(tree: CharNode, table: dict = None,
+                    code: bytes = b'') -> dict:
     """
     Given the tree with the chars-frequency processed, return a table that
     maps each character with its binary representation on the new code:
@@ -168,12 +169,12 @@ def parse_tree_code(tree, table=None, code=b'') -> dict:
     if tree.leaf:
         table[tree.value] = code
         return table
-    table.update(parse_tree_code(tree.left, table, code+LEFT))
-    table.update(parse_tree_code(tree.right, table, code+RIGHT))
+    table.update(parse_tree_code(tree.left, table, code + LEFT))
+    table.update(parse_tree_code(tree.right, table, code + RIGHT))
     return table
 
 
-def process_frequencies(stream):
+def process_frequencies(stream: Sequence[str]) -> List[CharNode]:
     """
     Given a stream of text, return a list of CharNode with the frequencies
     for each character.
@@ -184,7 +185,7 @@ def process_frequencies(stream):
     return [CharNode(value=value, freq=freq) for value, freq in counts.items()]
 
 
-def save_table(dest_file, table):
+def save_table(dest_file: io, table: dict) -> None:
     """
     Store the table in the destination file.
         c: char
@@ -203,7 +204,8 @@ def save_table(dest_file, table):
     dest_file.write(content)
 
 
-def process_line_compression(buffer_line, output_file, table):
+def process_line_compression(buffer_line: bytes, output_file: io,
+                             table: dict) -> None:
     """
     Transform `buffer_line` into the new code, per-byte, based on `table`
     and save the new byte-stream into `output_file`.
@@ -235,7 +237,7 @@ def process_line_compression(buffer_line, output_file, table):
 
 
 def compress_and_save_content(input_filename: str,
-                              output_file: str, table: dict):
+                              output_file: str, table: dict) -> None:
     """
     Opens and processes <input_filename>. Iterates over the file and writes
     the contents on output_file.
@@ -249,15 +251,14 @@ def compress_and_save_content(input_filename: str,
         while buff:
             process_line_compression(buff, output_file, table)
             buff = source.read(BUFF_SIZE)
-    return
 
 
-def _sizeof(code):
+def _sizeof(code: str) -> int:
     sizes = {'i': 4, 'c': 1, 'L': 4, 'I': 4}
     return sizes.get(code, 1)
 
 
-def retrieve_table(dest_file):
+def retrieve_table(dest_file: io) -> dict:
     """
     Read the binary file, and return the translation table as a reversed
     dictionary.
@@ -271,38 +272,37 @@ def retrieve_table(dest_file):
             for char, code in zip(chars, codes)}
 
 
-def _brand_filename(filename):
+def _brand_filename(filename: str) -> str:
     return "{}.comp".format(filename)
 
 
-def _save_checksum(ofile, checksum):
+def _save_checksum(ofile: io, checksum: int):
     """Persist the number of bytes as the first byte in <ofile>."""
     ofile.write(struct.pack('L', checksum))
-    return
 
 
-def _retrieve_checksum(ifile):
+def _retrieve_checksum(ifile: io) -> bytes:
     rawdata = ifile.read(_sizeof('L'))
     return struct.unpack('L', rawdata)[0]
 
 
-def save_compressed_file(filename, table, checksum, dest_file=None):
+def save_compressed_file(filename: str, table: dict, checksum: int,
+                         dest_file: str = '') -> None:
     """
     Given the original file by its `filename`, save a new one.
     `table` contains the new codes for each character on `filename`.
     """
-    new_file = dest_file if dest_file else _brand_filename(filename)
+    new_file = dest_file or _brand_filename(filename)
+
     with open(new_file, 'wb') as target:
         _save_checksum(target, checksum)
         save_table(target, table)
         compress_and_save_content(filename, target, table)
-    return
 
 
-def _decode_block(binary_content, table, block_length):
-    """
-    Transform the compressed content of a block into the original text.
-    """
+def _decode_block(binary_content: bytes, table: dict,
+                  block_length: int) -> str:
+    """Transform the compressed content of a block into the original text."""
     newchars = []
     cont = binascii.hexlify(binary_content)
     bitarray = bin(int(cont, 16))[2:]
@@ -325,7 +325,7 @@ def _decode_block(binary_content, table, block_length):
     return ''.join(newchars)[:block_length]
 
 
-def decode_file_content(compfile, table, checksum):
+def decode_file_content(compfile: io, table: dict, checksum: int) -> bytes:
     """
     Reconstruct the remaining part of the <compfile>, starting right after
     the metadata, decoding each bit according to the <table>.
@@ -345,12 +345,12 @@ def decode_file_content(compfile, table, checksum):
     return original_stream
 
 
-def _reorganize_table_keys(table):
+def _reorganize_table_keys(table: dict) -> dict:
     """Change the keys of the table to be more easily readable: bytes->str"""
     return {k[2:]: v for k, v in table.items()}
 
 
-def retrieve_compressed_file(filename, dest_file=None):
+def retrieve_compressed_file(filename: str, dest_file: str = '') -> None:
     """
     EXTRACT - Reconstruct the original file from the compressed copy.
     Write the output in the indicated `dest_file`.
@@ -359,7 +359,8 @@ def retrieve_compressed_file(filename, dest_file=None):
         checksum = _retrieve_checksum(src)
         map_table = retrieve_table(src)
         table = _reorganize_table_keys(map_table)
-        dest_filename = dest_file if dest_file else "{}.extr".format(filename)
+
+        dest_filename = dest_file or "{}.extr".format(filename)
         stream = decode_file_content(src, table, checksum)
         # Dump the decoded extraction into its destination
         with open(dest_filename, 'w+') as out:
