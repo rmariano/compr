@@ -13,22 +13,20 @@ from .core import (
     save_compressed_file,
     retrieve_compressed_file,
 )
-
-VERSION = '0.1.0'
+from compressor.constants import VERSION
 
 
 def compress_file(filename: str, dest_file: str=None) -> None:
     """
-    Open the <filename> and compress its content on a new one.
+    Open the <filename> and compress its contents on a new one.
 
     :param filename:  The path to the source file to compress.
     :param dest_file: The name of the target file. If not provided (None),
                       a default will be used with `<filename>.comp`
-
-    :return:          None
     """
     with open(filename, 'r') as source:
         freqs = process_frequencies(source.read())
+
     checksum = sum(c.freq for c in freqs)  # bytes
     tree_code = create_tree_code(freqs)
     table = parse_tree_code(tree_code)
@@ -39,15 +37,17 @@ def extract_file(filename: str, dest_file: str=None) -> None:
     """
     Extract the compressed <filename> into <dest_file>
 
-    :param filename:  The name of the file to open for extraction.
-    :param dest_file: The name (path) where to dump the result.
+    :param filename:  Name of the file to open for extraction.
+    :param dest_file: Name (path) where to dump the result.
     """
     retrieve_compressed_file(filename, dest_file)
 
 
-def parse_arguments():
+def parse_arguments() -> dict:
     """
     Parse the command-line (cli) provided arguments.
+
+    :return: dict with the kwargs provided in cli
     """
     parser = argparse.ArgumentParser(
         prog='PyCompress',
@@ -89,9 +89,12 @@ def main_engine(filename: str, extract: bool=False,
     return 0
 
 
-def main():
+def main() -> int:
     """
     Program cli
+
+    :return: Status code of the program.
+    :rtype: int
     """
     return main_engine(**parse_arguments())
 
