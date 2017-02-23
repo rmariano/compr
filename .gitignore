@@ -10,3 +10,4 @@ trenzalore.egg-info/
 .coverage
 htmlcov/
 doc/_build
+.eggs/

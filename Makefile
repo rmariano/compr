@@ -1,8 +1,10 @@
-all:
+.PHONY: dev
+dev:
+	pip install -e .
 
 .PHONY: test
 test: dev
-	py.test --cov-report=html --cov=compressor tests/
+	python setup.py test
 
 .PHONY: clean
 clean:
