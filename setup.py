@@ -5,7 +5,7 @@ from compressor import VERSION
 test_requires = ['pytest', 'pytest-cov']
 
 
-with open('Readme.rst', 'r') as readme:
+with open('README.rst', 'r') as readme:
     LONG_DESC = readme.read()
 
 
