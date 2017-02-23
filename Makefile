@@ -1,11 +1,13 @@
-all:
+.PHONY: dev
+dev:
+	pip install -e .
 
-test:
-	py.test --cov-report=html --cov=compressor tests/
+.PHONY: test
+test: dev
+	python setup.py test
 
+.PHONY: clean
 clean:
 	rm .coverage
 	rm -fr .cache/
 	find . -type f -name "*.pyc" -delete
-
-.PHONY: all test clean
