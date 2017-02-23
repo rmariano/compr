@@ -1,8 +1,11 @@
 from setuptools import setup
+
 from compressor import VERSION
 
+test_requires = ['pytest', 'pytest-cov']
 
-with open('Readme.rst', 'r') as readme:
+
+with open('README.rst', 'r') as readme:
     LONG_DESC = readme.read()
 
 
@@ -18,6 +21,9 @@ setup(
     zip_safe=True,
     license='MIT',
     keywords='text compression',
+    setup_requires=['pytest-runner'],
+    extras_require={'tests': test_requires},
+    tests_require=test_requires,
     classifiers=[
         'Development Status :: 1 - Planning',
         'Environment :: Console',
