@@ -30,13 +30,9 @@ the command line utility.
 Development
 -----------
 
-.. code:: python
-
-    python setup.py develop
+    make dev
 
 Run tests
 ---------
 
-.. code:: bash
-
-    nosetests tests/unit tests/functional
+    make test
