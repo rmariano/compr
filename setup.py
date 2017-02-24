@@ -1,7 +1,8 @@
 from setuptools import setup
 from compressor.constants import VERSION
 
-test_requires = ['pytest', 'pytest-cov']
+tests_require = ['pytest', 'pytest-cov']
+docs_require = ['Sphinx', 'sphinx-autodoc-annotation']
 
 
 with open('README.rst', 'r') as readme:
@@ -24,8 +25,11 @@ setup(
     license=LICENSE,
     keywords='text compression',
     setup_requires=['pytest-runner'],
-    extras_require={'tests': test_requires},
-    tests_require=test_requires,
+    extras_require={
+        'tests': tests_require,
+        'docs': docs_require,
+    },
+    tests_require=tests_require,
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',

@@ -20,12 +20,10 @@
 import os
 import sys
 
-import sphinx_rtd_theme
-
 
 sys.path.insert(0, os.path.abspath('../..'))
 
-from compressor.constants import VERSION
+from compressor.constants import VERSION  # noqa
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -132,8 +130,7 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -159,8 +156,8 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # html_logo = None
 
 # The name of an image file (relative to this directory) to use as a favicon of
-# the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
-# pixels large.
+# the docs.  This file should be a Windows icon file (.ico)
+# being 16x16 or 32x32 pixels large.
 #
 # html_favicon = None
 

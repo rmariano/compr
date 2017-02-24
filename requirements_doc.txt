@@ -1,4 +1,0 @@
--r requirements.txt
-Sphinx==1.4.8
-sphinx-autodoc-annotation==1.0.post1
-sphinx-rtd-theme==0.1.9

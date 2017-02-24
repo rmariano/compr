@@ -18,5 +18,6 @@ dev:
 
 .PHONY: doc
 doc:
+	pip install -e .[docs]
 	make -C doc/ html
 	@xdg-open doc/_build/html/index.html
