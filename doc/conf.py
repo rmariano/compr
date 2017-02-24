@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # compressor documentation build configuration file, created by
-# sphinx-quickstart on Wed Nov 16 20:14:34 2016.
+# sphinx-quickstart on Wed Nov 16 20:14:34 2017.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -61,7 +61,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'compressor'
-copyright = '2016, Mariano Anaya'
+copyright = '2014-2017, Mariano Anaya'
 author = 'Mariano Anaya'
 
 # The version info for the project you're documenting, acts as replacement for
