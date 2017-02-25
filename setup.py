@@ -1,34 +1,41 @@
 from setuptools import setup
+from compressor.constants import VERSION
 
-from compressor import VERSION
-
-test_requires = ['pytest', 'pytest-cov']
+tests_require = ['pytest', 'pytest-cov']
+docs_require = ['Sphinx', 'sphinx-autodoc-annotation']
 
 
 with open('README.rst', 'r') as readme:
     LONG_DESC = readme.read()
 
+with open('LICENSE', 'r') as license:
+    LICENSE = license.read()
+
 
 setup(
     name='trenzalore',
     version=VERSION,
-    description='Py3 text compression application',
+    description='Text compression tool',
     long_description=LONG_DESC,
     author='Mariano Anaya',
     author_email='marianoanaya@gmail.com',
     url='https://github.com/rmariano/compr',
-    packages=['compressor'],
+    packages=('compressor', ),
     zip_safe=True,
-    license='MIT',
+    license=LICENSE,
     keywords='text compression',
     setup_requires=['pytest-runner'],
-    extras_require={'tests': test_requires},
-    tests_require=test_requires,
+    extras_require={
+        'tests': tests_require,
+        'docs': docs_require,
+    },
+    tests_require=tests_require,
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Operating System :: POSIX :: Linux',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     entry_points={

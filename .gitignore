@@ -9,4 +9,5 @@ trenzalore.egg-info/
 .cache/
 .coverage
 htmlcov/
+doc/_build
 .eggs/
