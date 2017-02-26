@@ -12,10 +12,6 @@ clean:
 	rm -fr .cache/
 	find . -type f -name "*.pyc" -delete
 
-.PHONY: dev
-dev:
-	pip install -e .
-
 .PHONY: doc
 doc:
 	pip install -e .[docs]
