@@ -12,12 +12,12 @@ import struct
 import sys
 from collections import Counter
 from functools import total_ordering, wraps
-from typing import Callable, List, Sequence, io
+from typing import Callable, List, Sequence, io, Union
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
 
 
-def endianess_prefix(parm_type=str) -> str:
+def endianess_prefix(parm_type=str) -> Union[str, bytes]:
     """
     Return the prefix to be used in struct.{pack,unpack} according
     to the system architecture (little/big endian, 32/64 bits).
@@ -44,13 +44,12 @@ def patched_struct(struct_function: Callable) -> Callable:
     :return:                decorated <struct_function>
     """
     @wraps(struct_function)
-    def wrapped(*args):
+    def wrapped(code: Union[str, bytes], *args):
         """
         Decorated version of the struct original function
 
         :param args: The *args of the original function
         """
-        code = args[0]
         endian = endianess_prefix(type(code))
         assert type(code) is type(endian), "Type mismatch: {} and {}".format(
             type(code), type(endian))
@@ -58,7 +57,7 @@ def patched_struct(struct_function: Callable) -> Callable:
             # Note: it is NOT possible to use `.format` here, must be `+`
             # values can be bytes or str
             code = endian + code
-        return struct_function(code, *args[1:])
+        return struct_function(code, *args)
     return wrapped
 
 
