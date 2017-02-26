@@ -8,61 +8,12 @@ It contains auxiliary functions.
 """
 import binascii
 import heapq
-import struct
-import sys
 from collections import Counter
-from functools import total_ordering, wraps
-from typing import Callable, List, Sequence, io, Union
+from functools import total_ordering
+from typing import List, Sequence, io
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
-
-
-def endianess_prefix(parm_type=str) -> Union[str, bytes]:
-    """
-    Return the prefix to be used in struct.{pack,unpack} according
-    to the system architecture (little/big endian, 32/64 bits).
-
-    :param parm_type: str | bytes depending on the version
-    :return:          '<' for little endian
-                      '>' big endian
-    """
-    value = '<' if sys.byteorder == 'little' else '>'
-    if parm_type is bytes:
-        return bytes(value, encoding=ENC)
-    return value
-
-
-def patched_struct(struct_function: Callable) -> Callable:
-    """
-    Prefix the endian code according to the architecture by patching the
-    library.
-
-    This decorator patches the function from the struct module, based on
-    the architecture of the running system.
-
-    :param struct_function: struct.pack | struct.unpack
-    :return:                decorated <struct_function>
-    """
-    @wraps(struct_function)
-    def wrapped(code: Union[str, bytes], *args):
-        """
-        Decorated version of the struct original function
-
-        :param args: The *args of the original function
-        """
-        endian = endianess_prefix(type(code))
-        assert type(code) is type(endian), "Type mismatch: {} and {}".format(
-            type(code), type(endian))
-        if not code.startswith(endian):
-            # Note: it is NOT possible to use `.format` here, must be `+`
-            # values can be bytes or str
-            code = endian + code
-        return struct_function(code, *args)
-    return wrapped
-
-
-struct.pack = patched_struct(struct.pack)
-struct.unpack = patched_struct(struct.unpack)
+from compressor.functions import pack, unpack
 
 
 @total_ordering
@@ -189,10 +140,9 @@ def save_table(dest_file: io, table: dict) -> None:
     offset = len(table)
     tokens = [(bytes(char, encoding=ENC), b'1' + v)
               for char, v in table.items()]
-    content = struct.pack('i', offset)
-    content += struct.pack('{}c'.format(offset), *[t[0] for t in tokens])
-    content += struct.pack('{}L'.format(offset),
-                           *[int(t[1], base=2) for t in tokens])
+    content = pack('i', offset)
+    content += pack('{}c'.format(offset), *[t[0] for t in tokens])
+    content += pack('{}L'.format(offset), *[int(t[1], base=2) for t in tokens])
     dest_file.write(content)
 
 
@@ -223,8 +173,8 @@ def process_line_compression(buffer_line: bytes, output_file: io,
     block_length = len(array_str) // BYTE
     original_length = len(buffer_line)
 
-    output_file.write(struct.pack('I', block_length))
-    output_file.write(struct.pack('I', original_length))
+    output_file.write(pack('I', block_length))
+    output_file.write(pack('I', original_length))
     output_file.write(block)
 
 
@@ -255,11 +205,11 @@ def retrieve_table(dest_file: io) -> dict:
     Read the binary file, and return the translation table as a reversed
     dictionary.
     """
-    offset, *_ = struct.unpack('i', dest_file.read(_sizeof('i')))
+    offset, *_ = unpack('i', dest_file.read(_sizeof('i')))
     chars = dest_file.read(offset * _sizeof('c'))
     codes = dest_file.read(offset * _sizeof('L'))
-    chars = struct.unpack('{}c'.format(offset), chars)
-    codes = struct.unpack('{}L'.format(offset), codes)
+    chars = unpack('{}c'.format(offset), chars)
+    codes = unpack('{}L'.format(offset), codes)
     return {bin(code)[1:]: str(char, encoding=ENC)
             for char, code in zip(chars, codes)}
 
@@ -270,12 +220,12 @@ def _brand_filename(filename: str) -> str:
 
 def _save_checksum(ofile: io, checksum: int):
     """Persist the number of bytes as the first byte in <ofile>."""
-    ofile.write(struct.pack('L', checksum))
+    ofile.write(pack('L', checksum))
 
 
 def _retrieve_checksum(ifile: io) -> bytes:
     rawdata = ifile.read(_sizeof('L'))
-    return struct.unpack('L', rawdata)[0]
+    return unpack('L', rawdata)[0]
 
 
 def save_compressed_file(filename: str, table: dict, checksum: int,
@@ -325,8 +275,8 @@ def decode_file_content(compfile: io, table: dict, checksum: int) -> bytes:
     original_stream = ''
     next_block = compfile.read(_sizeof('I'))
     while len(original_stream) < checksum and next_block:
-        block_size, *_ = struct.unpack('I', next_block)
-        block_length, *_ = struct.unpack('I', compfile.read(_sizeof('I')))
+        block_size, *_ = unpack('I', next_block)
+        block_length, *_ = unpack('I', compfile.read(_sizeof('I')))
         binary_content = compfile.read(block_size)
         retrieved = _decode_block(binary_content, table, block_length)
 
