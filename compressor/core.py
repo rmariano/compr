@@ -13,7 +13,7 @@ from functools import total_ordering
 from typing import List, Sequence, io
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
-from compressor.functions import pack, unpack
+from compressor.functions import pack, unpack, brand_filename
 
 
 @total_ordering
@@ -212,10 +212,6 @@ def retrieve_table(dest_file: io) -> dict:
     codes = unpack('{}L'.format(offset), codes)
     return {bin(code)[1:]: str(char, encoding=ENC)
             for char, code in zip(chars, codes)}
-
-
-def _brand_filename(filename: str) -> str:
-    return "{}.comp".format(filename)
 
 
 def _save_checksum(ofile: io, checksum: int):

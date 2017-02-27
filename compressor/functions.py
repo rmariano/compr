@@ -7,6 +7,11 @@ from typing import Callable, Union
 from compressor.constants import ENC
 
 
+def brand_filename(filename: str) -> str:
+    """Default composition for the name to be used"""
+    return "{0}.comp".format(filename)
+
+
 def endianess_prefix(parm_type=str) -> Union[str, bytes]:
     """
     Return the prefix to be used in struct.{pack,unpack} according
@@ -44,8 +49,6 @@ def patched_struct(struct_function: Callable) -> Callable:
         assert type(code) is type(endian), "Type mismatch: {} and {}".format(
             type(code), type(endian))
         if not code.startswith(endian):
-            # Note: it is NOT possible to use `.format` here, must be `+`
-            # values can be bytes or str
             code = endian + code
         return struct_function(code, *args)
     return wrapped
