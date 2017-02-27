@@ -113,9 +113,8 @@ def main_engine(filename: str, extract: bool=False,
     return 0
 
 
-def main() -> int:
-    """
-    Program cli
+def main() -> int:  # pragma: nocover
+    """Program cli
 
     :return: Status code of the program.
     :rtype: int
@@ -123,5 +122,5 @@ def main() -> int:
     return main_engine(**parse_arguments())
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: nocover
     sys.exit(main())
