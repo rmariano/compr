@@ -276,8 +276,6 @@ def decode_file_content(compfile: io, table: dict, checksum: int) -> bytes:
         binary_content = compfile.read(block_size)
         retrieved = _decode_block(binary_content, table, block_length)
 
-        if len(original_stream + retrieved) > checksum:
-            break
         original_stream += retrieved
         next_block = compfile.read(_sizeof('I'))
     return original_stream
