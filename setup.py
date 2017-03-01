@@ -1,7 +1,7 @@
 from setuptools import setup
 from compressor.constants import VERSION
 
-tests_require = ['pytest', 'pytest-cov']
+tests_require = ['pytest', 'pytest-cov', 'codecov']
 docs_require = ['Sphinx', 'sphinx-autodoc-annotation']
 
 
