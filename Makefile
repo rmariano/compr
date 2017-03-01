@@ -3,8 +3,9 @@ dev:
 	pip install -e .
 
 .PHONY: test
-test: dev
-	python setup.py test
+test:
+	pip install -e .[tests]
+	pytest
 
 .PHONY: clean
 clean:

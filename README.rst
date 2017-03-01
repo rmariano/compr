@@ -6,6 +6,10 @@
    :target: http://compr.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
+.. image:: https://codecov.io/gh/rmariano/compr/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/rmariano/compr
+   :alt: coverage
+
 
 .. begin
 
