@@ -24,6 +24,8 @@ setup(
     zip_safe=True,
     license=LICENSE,
     keywords='text compression',
+    install_requires=docs_require,
+    setup_requires=['pytest-runner'],
     extras_require={
         'tests': tests_require,
         'docs': docs_require,

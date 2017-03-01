@@ -2,6 +2,11 @@
    :target: https://travis-ci.org/rmariano/compr
    :alt: CI Status
 
+.. image:: https://readthedocs.org/projects/compr/badge/?version=latest&style=flat-square
+   :target: http://compr.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
+
 .. begin
 
 PyCompress
