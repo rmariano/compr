@@ -2,10 +2,20 @@
 dev:
 	pip install -e .
 
-.PHONY: test
-test:
+.PHONY: typehint
+typehint: testdeps
+	mypy compressor/
+
+.PHONY: testdeps
+testdeps:
 	pip install -e .[tests]
+
+.PHONY: test
+test: testdeps
 	pytest
+
+.PHONY: checklist
+checklist: typehint test
 
 .PHONY: clean
 clean:
