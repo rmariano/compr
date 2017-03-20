@@ -230,7 +230,7 @@ def save_compressed_file(filename: str, table: dict, checksum: int,
     Given the original file by its `filename`, save a new one.
     `table` contains the new codes for each character on `filename`.
     """
-    new_file = dest_file or _brand_filename(filename)
+    new_file = dest_file or brand_filename(filename)
 
     with open(new_file, 'wb') as target:
         _save_checksum(target, checksum)
