@@ -1,12 +1,12 @@
 import glob
+import hashlib
 import os
 import subprocess
 import tempfile
-import hashlib
-from tests import BaseTest
-from compressor import main_engine
-
 from typing import List
+
+from compressor import main_engine
+from tests import BaseTest
 
 
 def _all_files_identical(*files: List[str]) -> bool:
