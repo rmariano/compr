@@ -11,11 +11,17 @@ testdeps:
 	pip install -e .[tests]
 
 .PHONY: test
-test: testdeps
+test: testdeps checklist
 	pytest
 
+.PHONY: lint
+lint:
+	pylint --rcfile=setup.cfg \
+		compressor/ \
+		tests/
+
 .PHONY: checklist
-checklist: typehint test
+checklist: lint test
 
 .PHONY: clean
 clean:
