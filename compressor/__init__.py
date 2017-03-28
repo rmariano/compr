@@ -6,7 +6,7 @@ This module contains high-level functionality.
 """
 import argparse
 import sys
-from .core import (
+from compressor.core import (
     process_frequencies,
     create_tree_code,
     parse_tree_code,
