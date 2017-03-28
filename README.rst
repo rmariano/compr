@@ -75,3 +75,14 @@ And run the tests with:
 .. code:: bash
 
     make test
+
+Before submitting a pull request, run the checklist to make sure all
+dependencies are met (code style/linting, tests, pass, etc.). This is automated
+with:
+
+.. code:: bash
+
+    make checklist
+
+This will run the checks for the code style (``make lint``), as well as the
+tests (``make test``).

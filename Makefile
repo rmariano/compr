@@ -11,14 +11,12 @@ testdeps:
 	pip install -e .[tests]
 
 .PHONY: test
-test: testdeps checklist
+test: testdeps
 	pytest
 
 .PHONY: lint
 lint:
-	pylint --rcfile=setup.cfg \
-		compressor/ \
-		tests/
+	@./tests/checklist/linting.sh
 
 .PHONY: checklist
 checklist: lint test
