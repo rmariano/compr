@@ -13,7 +13,7 @@ from functools import total_ordering
 from typing import List, Sequence, io
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
-from compressor.functions import pack, unpack, brand_filename
+from compressor.functions import brand_filename, pack, unpack
 
 
 @total_ordering
@@ -34,7 +34,7 @@ class CharNode:
         :param left:  left child of this node.
         :param right: right child of this node in the tree.
         """
-        self.value = value
+        self._value = value
         self.freq = freq
         self.left = left
         self.right = right
@@ -52,6 +52,11 @@ class CharNode:
 
     def __eq__(self, other) -> bool:
         return self.freq == other.freq
+
+    @property
+    def value(self):
+        """Expose the value being hold as read-only."""
+        return self._value
 
     @property
     def leaf(self) -> bool:
@@ -91,8 +96,8 @@ def create_tree_code(charset: List[CharNode]) -> CharNode:
     return heapq.heappop(alpha_heap)
 
 
-def parse_tree_code(tree: CharNode, table: dict = None,
-                    code: bytes = b'') -> dict:
+def parse_tree_code(tree: CharNode, table: dict=None,
+                    code: bytes=b'') -> dict:
     """
     Given the tree with the chars-frequency processed, return a table that
     maps each character with its binary representation on the new code:
@@ -225,7 +230,7 @@ def _retrieve_checksum(ifile: io) -> bytes:
 
 
 def save_compressed_file(filename: str, table: dict, checksum: int,
-                         dest_file: str = '') -> None:
+                         dest_file: str='') -> None:
     """
     Given the original file by its `filename`, save a new one.
     `table` contains the new codes for each character on `filename`.
@@ -286,7 +291,7 @@ def _reorganize_table_keys(table: dict) -> dict:
     return {k[2:]: v for k, v in table.items()}
 
 
-def retrieve_compressed_file(filename: str, dest_file: str = '') -> None:
+def retrieve_compressed_file(filename: str, dest_file: str='') -> None:
     """
     EXTRACT - Reconstruct the original file from the compressed copy.
     Write the output in the indicated `dest_file`.
