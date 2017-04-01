@@ -11,7 +11,7 @@ testdeps:
 	pip install -e .[tests]
 
 .PHONY: test
-test: testdeps
+test:
 	pytest
 
 .PHONY: lint
@@ -19,7 +19,7 @@ lint:
 	@./tests/checklist/linting.sh
 
 .PHONY: checklist
-checklist: lint test
+checklist: testdeps lint test
 
 .PHONY: clean
 clean:

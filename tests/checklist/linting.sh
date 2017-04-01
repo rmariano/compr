@@ -15,4 +15,5 @@ if [[ "$?" == "0" ]]; then
     echo -e "$TICK Code style correct$RESET"
 else
     echo -e "$CROSS Check for errors in the code style$RESET"
+    exit 1
 fi
