@@ -96,8 +96,8 @@ def create_tree_code(charset: List[CharNode]) -> CharNode:
     return heapq.heappop(alpha_heap)
 
 
-def parse_tree_code(tree: CharNode, table: dict=None,
-                    code: bytes=b'') -> dict:
+def parse_tree_code(tree: CharNode, table: dict = None,
+                    code: bytes = b'') -> dict:
     """
     Given the tree with the chars-frequency processed, return a table that
     maps each character with its binary representation on the new code:
@@ -230,7 +230,7 @@ def _retrieve_checksum(ifile: io) -> bytes:
 
 
 def save_compressed_file(filename: str, table: dict, checksum: int,
-                         dest_file: str='') -> None:
+                         dest_file: str = '') -> None:
     """
     Given the original file by its `filename`, save a new one.
     `table` contains the new codes for each character on `filename`.
@@ -291,7 +291,7 @@ def _reorganize_table_keys(table: dict) -> dict:
     return {k[2:]: v for k, v in table.items()}
 
 
-def retrieve_compressed_file(filename: str, dest_file: str='') -> None:
+def retrieve_compressed_file(filename: str, dest_file: str = '') -> None:
     """
     EXTRACT - Reconstruct the original file from the compressed copy.
     Write the output in the indicated `dest_file`.

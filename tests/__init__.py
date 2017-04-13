@@ -9,6 +9,5 @@ class BaseTest(unittest.TestCase):
     Specific tests should call the kook with super().setUp()
     """
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    def setUp(self):
         self.store = os.path.join(os.path.dirname(__file__), 'data')
