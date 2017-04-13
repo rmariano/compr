@@ -8,7 +8,7 @@ typehint: testdeps
 
 .PHONY: testdeps
 testdeps:
-	pip install -e .[tests]
+	pip install -U -e .[tests]
 
 .PHONY: test
 test:
