@@ -54,5 +54,11 @@ def patched_struct(struct_function: Callable) -> Callable:
     return wrapped
 
 
-pack = patched_struct(struct.pack)  # pylint: disable=invalid-name
-unpack = patched_struct(struct.unpack)  # pylint: disable=invalid-name
+@patched_struct
+def pack(code, *args):
+    return struct.pack(code, *args)
+
+
+@patched_struct
+def unpack(code, *args):
+    return struct.unpack(code, *args)
