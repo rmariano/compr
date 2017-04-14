@@ -4,7 +4,7 @@ dev:
 
 .PHONY: typehint
 typehint:
-	mypy compressor/
+	@./tests/checklist/typehint.sh
 
 .PHONY: testdeps
 testdeps:
