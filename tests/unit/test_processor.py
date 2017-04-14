@@ -1,12 +1,10 @@
 import glob
-import random
 import os
+import random
+
+from compressor.core import (create_tree_code, parse_tree_code,
+                             process_frequencies)
 from tests import BaseTest
-from compressor.core import (
-    process_frequencies,
-    create_tree_code,
-    parse_tree_code,
-)
 
 
 class TestCore(BaseTest):

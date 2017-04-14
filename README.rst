@@ -13,35 +13,85 @@
 
 .. begin
 
+.. contents ::
+
 PyCompress
 ==========
 
-Pycompress is a package that implements a text compression algorithm. The program
-that implements this algorithm, allows the user to compress a text file, in a resulting
-one which a smaller size, as well as extracting a compressed file (that was created by
-the same means), resulting in the original one.
+``Pycompressor`` is a tool for compressing text files into smaller ones, as
+well as extracting compressed files back into the original content.
 
 It can be used as a program or imported as a package module,
 and use the functions defined on it.
 
+
+For example, in order to compress one file:
+
+.. code:: bash
+
+    $ pycompress -c -d /tmp/compressed.zf /usr/share/dict/words
+
+The original file, in this example has a size of ``~4.8M``, and the tool left
+the resulting file at ``/tmp/compressed.zf``, with a size of ``~2.7M``.
+
+In order to extract it:
+
+.. code:: bash
+
+    $ pycompress -x -d /tmp/original /tmp/compressed.zf
+
+You can specify the name of the resulting file with the ``-d`` flag. If you
+don't indicate a name for the resulting file, the default will be
+``<original-file>.comp``.
+
+For the full options, run:
+
+.. code:: bash
+
+    $ pycompress -h
+
+
 Installation
-------------
+^^^^^^^^^^^^
 
 .. code:: bash
 
    pip install trenzalore
 
 
-Will install the package and leave an application named `pycompress` for using
-the command line utility.
+Will install the package and leave an application named ``pycompress`` for
+using the command line utility.
 
 
 Development
------------
+^^^^^^^^^^^
+
+To install the package in development mode, run:
+
+.. code:: bash
 
     make dev
 
-Run tests
----------
+And run the tests with:
+
+.. code:: bash
 
     make test
+
+Before submitting a pull request, run the checklist to make sure all
+dependencies are met (code style/linting, tests, pass, etc.). This is automated
+with:
+
+.. code:: bash
+
+    make checklist
+
+This will run the checks for the code style (``make lint``), as well as the
+tests (``make test``).
+
+In order to check that the project runs with the supported Python versions,
+run:
+
+.. code:: bash
+
+    make tox

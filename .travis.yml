@@ -2,8 +2,9 @@ language: python
 
 python:
     - "3.5"
+    - "3.6"
 
-script: make test
+script: make checklist
 
 after_success:
     - codecov

@@ -6,7 +6,7 @@ This module contains high-level functionality.
 """
 import argparse
 import sys
-from .core import (
+from compressor.core import (
     process_frequencies,
     create_tree_code,
     parse_tree_code,
@@ -16,7 +16,7 @@ from .core import (
 from compressor.constants import VERSION
 
 
-def compress_file(filename: str, dest_file: str=None) -> None:
+def compress_file(filename: str, dest_file: str = None) -> None:
     """
     Open the <filename> and compress its contents on a new one.
 
@@ -33,7 +33,7 @@ def compress_file(filename: str, dest_file: str=None) -> None:
     save_compressed_file(filename, table, checksum, dest_file)
 
 
-def extract_file(filename: str, dest_file: str=None) -> None:
+def extract_file(filename: str, dest_file: str = None) -> None:
     """
     Extract the compressed <filename> into <dest_file>
 
@@ -92,8 +92,8 @@ def parse_arguments(args=None) -> dict:
     return vars(args)
 
 
-def main_engine(filename: str, extract: bool=False,
-                compress: bool=True, dest_file=None) -> int:
+def main_engine(filename: str, extract: bool = False,
+                compress: bool = True, dest_file=None) -> int:
     """
     Main functionality for the program cli or call as library.
     `extract` & `compress` must have opposite values.

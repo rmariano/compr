@@ -13,7 +13,7 @@ from functools import total_ordering
 from typing import List, Sequence, io
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
-from compressor.functions import pack, unpack, brand_filename
+from compressor.functions import brand_filename, pack, unpack
 
 
 @total_ordering
@@ -34,7 +34,7 @@ class CharNode:
         :param left:  left child of this node.
         :param right: right child of this node in the tree.
         """
-        self.value = value
+        self._value = value
         self.freq = freq
         self.left = left
         self.right = right
@@ -52,6 +52,11 @@ class CharNode:
 
     def __eq__(self, other) -> bool:
         return self.freq == other.freq
+
+    @property
+    def value(self):
+        """Expose the value being hold as read-only."""
+        return self._value
 
     @property
     def leaf(self) -> bool:

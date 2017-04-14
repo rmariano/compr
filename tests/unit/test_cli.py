@@ -1,7 +1,9 @@
 """Tests for the command line arguments"""
-import pytest
-from compressor import argument_parser, parse_arguments
 from argparse import Namespace
+
+import pytest
+
+from compressor import argument_parser, parse_arguments
 from compressor.constants import VERSION
 
 

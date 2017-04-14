@@ -1,15 +1,13 @@
 from setuptools import setup
+
 from compressor.constants import VERSION
 
-tests_require = ['pytest', 'pytest-cov', 'codecov', 'mypy']
+tests_require = ['pytest', 'pytest-cov', 'codecov', 'mypy', 'pylint']
 docs_require = ['Sphinx', 'sphinx-autodoc-annotation']
 
 
 with open('README.rst', 'r') as readme:
     LONG_DESC = readme.read()
-
-with open('LICENSE', 'r') as license:
-    LICENSE = license.read()
 
 
 setup(
@@ -22,7 +20,7 @@ setup(
     url='https://github.com/rmariano/compr',
     packages=('compressor', ),
     zip_safe=True,
-    license=LICENSE,
+    license='MIT',
     keywords='text compression',
     install_requires=docs_require,
     setup_requires=['pytest-runner'],
