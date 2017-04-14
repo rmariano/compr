@@ -48,8 +48,8 @@ def patched_struct(struct_function: Callable) -> Callable:
         endian = endianess_prefix(type(code))
         assert type(code) is type(endian), "Type mismatch: {} and {}".format(
             type(code), type(endian))
-        if not code.startswith(endian):
-            code = endian + code
+        if not code.startswith(endian):  # type: ignore
+            code = endian + code  # type: ignore
         return struct_function(code, *args)
     return wrapped
 

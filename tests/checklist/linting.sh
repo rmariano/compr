@@ -1,19 +1,11 @@
 #!/bin/bash
 
-YELLOW="\e[93m"
-RED="\e[91m"
-RESET="\e[0m"
-TICK="\e[32m✔"
-CROSS="\e[31m✘"
+# shellcheck source=tests/checklist/base.sh
+. "$(dirname ${BASH_SOURCE[0]})/base.sh"
 
 echo -e "$YELLOW> Checking code style...$RESET"
 pylint --rcfile=setup.cfg \
     compressor/ \
     tests/
 
-if [[ "$?" == "0" ]]; then
-    echo -e "$TICK Code style correct$RESET"
-else
-    echo -e "$CROSS Check for errors in the code style$RESET"
-    exit 1
-fi
+check $? "Code style"

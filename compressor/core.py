@@ -10,7 +10,7 @@ import binascii
 import heapq
 from collections import Counter
 from functools import total_ordering
-from typing import List, Sequence, io
+from typing import List, Sequence, io  # type: ignore
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
 from compressor.functions import brand_filename, pack, unpack
@@ -161,7 +161,7 @@ def process_line_compression(buffer_line: bytes, output_file: io,
     :param output_file: The opened file where to write the result.
     :param table:       Translation table for the characters in `buffer_line`.
     """
-    bitarray = []
+    bitarray = []  # type: list
     chr_buffer = b''
     for char in buffer_line:
         encoded_char = table[char]
@@ -184,13 +184,13 @@ def process_line_compression(buffer_line: bytes, output_file: io,
 
 
 def compress_and_save_content(input_filename: str,
-                              output_file: str, table: dict) -> None:
+                              output_file: io, table: dict) -> None:
     """
     Opens and processes <input_filename>. Iterates over the file and writes
     the contents on output_file.
 
     :param input_filename: the source to be compressed
-    :param output_file:    path to the file for the output
+    :param output_file:    opened file where to write the outcome
     :param table:          mapping table for the char encoding
     """
     with open(input_filename, 'r') as source:
@@ -224,7 +224,7 @@ def _save_checksum(ofile: io, checksum: int):
     ofile.write(pack('L', checksum))
 
 
-def _retrieve_checksum(ifile: io) -> bytes:
+def _retrieve_checksum(ifile: io) -> int:
     rawdata = ifile.read(_sizeof('L'))
     return unpack('L', rawdata)[0]
 
@@ -268,7 +268,7 @@ def _decode_block(binary_content: bytes, table: dict,
     return ''.join(newchars)[:block_length]
 
 
-def decode_file_content(compfile: io, table: dict, checksum: int) -> bytes:
+def decode_file_content(compfile: io, table: dict, checksum: int) -> str:
     """
     Reconstruct the remaining part of the <compfile>, starting right after
     the metadata, decoding each bit according to the <table>.

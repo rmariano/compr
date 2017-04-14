@@ -3,8 +3,8 @@ dev:
 	pip install -e .
 
 .PHONY: typehint
-typehint: testdeps
-	mypy compressor/
+typehint:
+	@./tests/checklist/typehint.sh
 
 .PHONY: testdeps
 testdeps:
@@ -19,7 +19,7 @@ lint:
 	@./tests/checklist/linting.sh
 
 .PHONY: checklist
-checklist: testdeps lint test
+checklist: testdeps lint typehint test
 
 .PHONY: clean
 clean:
