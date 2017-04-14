@@ -24,7 +24,7 @@ checklist: testdeps lint test
 .PHONY: clean
 clean:
 	rm .coverage
-	rm -fr .cache/
+	rm -fr .cache/ .tox/ build/
 	find . -type f -name "*.pyc" -delete
 
 .PHONY: doc
@@ -32,3 +32,8 @@ doc:
 	pip install -e .[docs]
 	make -C doc/ html
 	@xdg-open doc/_build/html/index.html
+
+.PHONY: tox
+tox:
+	pip install -U tox
+	tox
