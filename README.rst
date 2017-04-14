@@ -13,6 +13,8 @@
 
 .. begin
 
+.. contents ::
+
 PyCompress
 ==========
 
