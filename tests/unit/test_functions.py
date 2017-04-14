@@ -9,9 +9,19 @@ def test_endianess_prefix_bigendinan(monkeypatch):
     assert endianess_prefix() == '>'
 
 
+def test_endianess_prefix_littleendian(monkeypatch):
+    monkeypatch.setattr(sys, 'byteorder', 'little')
+    assert endianess_prefix() == '<'
+
+
 def test_endianess_prefix_bytes(monkeypatch):
     monkeypatch.setattr(sys, 'byteorder', 'big')
     assert endianess_prefix(bytes) == b'>'
+
+
+def test_littleendian_bytes(monkeypatch):
+    monkeypatch.setattr(sys, 'byteorder', 'little')
+    assert endianess_prefix(bytes) == b'<'
 
 
 def test_packing(monkeypatch):
