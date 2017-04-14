@@ -10,7 +10,7 @@ import binascii
 import heapq
 from collections import Counter
 from functools import total_ordering
-from typing import List, Sequence, io
+from typing import List, Sequence, io  # type: ignore
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
 from compressor.functions import brand_filename, pack, unpack
@@ -161,7 +161,7 @@ def process_line_compression(buffer_line: bytes, output_file: io,
     :param output_file: The opened file where to write the result.
     :param table:       Translation table for the characters in `buffer_line`.
     """
-    bitarray = []
+    bitarray = []  # type: list
     chr_buffer = b''
     for char in buffer_line:
         encoded_char = table[char]
