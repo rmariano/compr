@@ -86,3 +86,10 @@ with:
 
 This will run the checks for the code style (``make lint``), as well as the
 tests (``make test``).
+
+In order to check that the project runs with the supported Python versions,
+run:
+
+.. code:: bash
+
+    make tox

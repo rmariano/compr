@@ -11,3 +11,4 @@ trenzalore.egg-info/
 htmlcov/
 doc/_build
 .eggs/
+.tox/
