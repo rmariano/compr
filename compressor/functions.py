@@ -56,9 +56,15 @@ def patched_struct(struct_function: Callable) -> Callable:
 
 @patched_struct
 def pack(code, *args):
+    """Original struct.pack with the decorator applied.
+    Will change the code according to the system's architecture.
+    """
     return struct.pack(code, *args)
 
 
 @patched_struct
 def unpack(code, *args):
+    """Original struct.unpack with the decorator applied.
+    Will change the code according to the system's architecture.
+    """
     return struct.unpack(code, *args)
