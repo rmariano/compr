@@ -41,3 +41,8 @@ doc:
 tox:
 	pip install -U tox
 	tox
+
+# use; make release VERSION=<version>
+.PHONY: release
+release:
+	git tag -s $(VERSION)
