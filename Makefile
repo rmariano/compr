@@ -1,3 +1,7 @@
+.PHONY: build
+build:
+	python setup.py bdist_wheel
+
 .PHONY: dev
 dev:
 	pip install -e .
