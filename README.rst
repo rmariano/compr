@@ -10,6 +10,9 @@
    :target: https://codecov.io/gh/rmariano/compr
    :alt: coverage
 
+.. image:: https://img.shields.io/pypi/pyversions/trenzalore.svg?style=flat-square
+   :target: https://pypi.python.org/pypi/trenzalore
+
 
 .. begin
 
