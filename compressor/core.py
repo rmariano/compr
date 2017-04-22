@@ -82,7 +82,8 @@ def create_tree_code(charset: List[CharNode]) -> CharNode:
     """
     alpha_heap = charset
     heapq.heapify(alpha_heap)
-    for _ in range(1, len(charset)):
+
+    for _ in charset[:-1]:
         left_char = heapq.heappop(alpha_heap)
         right_char = heapq.heappop(alpha_heap)
 
