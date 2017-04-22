@@ -2,7 +2,7 @@
 import struct
 import sys
 from functools import wraps, singledispatch
-from typing import Callable, Union
+from typing import Callable, Union, overload
 
 from compressor.constants import ENC
 
@@ -73,8 +73,10 @@ def unpack(code, *args):
 @singledispatch
 def tobinary(obj) -> str:
     """Convert <obj> to the binary representation"""
+    return str(obj)
 
 
+@overload
 @tobinary.register(int)
 def _(number) -> str:
     """Return the ``str`` for the binary representation of ``number``.
@@ -86,6 +88,7 @@ def _(number) -> str:
     return format(number, 'b')
 
 
+@overload
 @tobinary.register(str)
 @tobinary.register(bytes)
 def _(str_hex):
