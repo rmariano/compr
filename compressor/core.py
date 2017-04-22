@@ -219,7 +219,6 @@ def retrieve_table(dest_file: io) -> dict:
 
     chars = unpack('{}c'.format(offset), chars)
     codes = unpack('{}L'.format(offset), codes)
-    # FIXME: Remove 'b' prefix
     return {"b{0}".format(tobinary(code)): str(char, encoding=ENC)
             for char, code in zip(chars, codes)}
 
