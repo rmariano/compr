@@ -144,12 +144,14 @@ def save_table(dest_file: io, table: dict) -> None:
     :param table:     Mapping table with the chars and their codes.
     """
     offset = len(table)
-    tokens = [(bytes(char, encoding=ENC), b'1' + v)
-              for char, v in table.items()]
-    content = pack('i', offset)
-    content += pack('{}c'.format(offset), *[t[0] for t in tokens])
-    content += pack('{}L'.format(offset), *[int(t[1], base=2) for t in tokens])
-    dest_file.write(content)
+    tokens = [(char.encode(ENC), int(b'1' + codec, base=2))
+              for char, codec in table.items()]
+
+    chars, codecs = zip(*tokens)
+
+    dest_file.write(pack('i', offset))
+    dest_file.write(pack('{0}c'.format(offset), *chars))
+    dest_file.write(pack('{0}L'.format(offset), *codecs))
 
 
 def process_line_compression(buffer_line: bytes, output_file: io,
