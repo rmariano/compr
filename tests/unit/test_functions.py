@@ -1,7 +1,8 @@
 """Tests for the set of functions defined in compressor.functions"""
 import sys
 
-from compressor.functions import brand_filename, endianess_prefix, pack, unpack
+from compressor.functions import (brand_filename, endianess_prefix, pack,
+                                  tobinary, unpack)
 
 
 def test_endianess_prefix_bigendinan(monkeypatch):
@@ -34,3 +35,18 @@ def test_packing(monkeypatch):
 
 def test_default_filename():
     assert brand_filename('file') == 'file.comp'
+
+
+def test_tobinary_int():
+    assert tobinary(0xff) == '11111111'
+    assert tobinary(42) == '101010'
+
+
+def test_tobinary_string():
+    assert tobinary('ff') == '11111111'
+    assert tobinary('F') == tobinary(15)
+
+
+def test_tobinary_bytes():
+    assert tobinary(b'ff') == tobinary(255)
+    assert tobinary(b'A') == '1010'
