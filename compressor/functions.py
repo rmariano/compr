@@ -1,7 +1,7 @@
 """Utilities and functions used throughout the application"""
 import struct
 import sys
-from functools import wraps
+from functools import wraps, singledispatch
 from typing import Callable, Union
 
 from compressor.constants import ENC
@@ -68,3 +68,35 @@ def unpack(code, *args):
     Will change the code according to the system's architecture.
     """
     return struct.unpack(code, *args)
+
+
+@singledispatch
+def tobinary(obj) -> str:
+    """Convert <obj> to the binary representation"""
+
+
+@tobinary.register(int)
+def _(number) -> str:
+    """Return the ``str`` for the binary representation of ``number``.
+    Examples::
+
+        >>> tobinary(42)
+        '101010'
+    """
+    return format(number, 'b')
+
+
+@tobinary.register(str)
+@tobinary.register(bytes)
+def _(str_hex):
+    """If it is a string, we assume it's the HEX representation of the number.
+
+    For example::
+
+        >>> tobinary('ff')  # 255
+        '11111111'
+
+        >>> tobinary(b'a')  # 10
+        '1010'
+    """
+    return tobinary(int(str_hex, 16))

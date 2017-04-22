@@ -13,7 +13,7 @@ from functools import total_ordering
 from typing import List, Sequence, io  # type: ignore
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
-from compressor.functions import brand_filename, pack, unpack
+from compressor.functions import brand_filename, pack, unpack, tobinary
 
 
 @total_ordering
@@ -216,9 +216,10 @@ def retrieve_table(dest_file: io) -> dict:
     offset, *_ = unpack('i', dest_file.read(_sizeof('i')))
     chars = dest_file.read(offset * _sizeof('c'))
     codes = dest_file.read(offset * _sizeof('L'))
+
     chars = unpack('{}c'.format(offset), chars)
     codes = unpack('{}L'.format(offset), codes)
-    return {bin(code)[1:]: str(char, encoding=ENC)
+    return {"b{0}".format(tobinary(code)): str(char, encoding=ENC)
             for char, code in zip(chars, codes)}
 
 
@@ -251,7 +252,7 @@ def _decode_block(binary_content: bytes, table: dict,
     """Transform the compressed content of a block into the original text."""
     newchars = []
     cont = binascii.hexlify(binary_content)
-    bitarray = bin(int(cont, 16))[2:]
+    bitarray = tobinary(cont)
     # Ignore first bit, sentinel
     bitarray = bitarray[1:]
     window_start, window_end = 0, 1
