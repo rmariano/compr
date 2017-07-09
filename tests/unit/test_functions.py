@@ -33,8 +33,12 @@ def test_packing(monkeypatch):
     assert data == 42
 
 
-def test_default_filename():
+def test_default_filename_base_file():
     assert default_filename('file') == 'file.comp'
+
+
+def test_default_filename_abs_path():
+    assert default_filename('/usr/local/bin/custom_filename.txt') == 'custom_filename.txt.comp'
 
 
 def test_tobinary_int():
