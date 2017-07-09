@@ -69,17 +69,15 @@ using the command line utility.
 Development
 ^^^^^^^^^^^
 
-To install the package in development mode, run:
-
-.. code:: bash
+To install the package in development mode, run::
 
     make dev
 
-And run the tests with:
-
-.. code:: bash
+And run the tests with::
 
     make test
+
+Tests have dependencies that can be installed by running ``make testdeps``.
 
 Before submitting a pull request, run the checklist to make sure all
 dependencies are met (code style/linting, tests, pass, etc.). This is automated
