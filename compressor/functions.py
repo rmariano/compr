@@ -1,7 +1,8 @@
 """Utilities and functions used throughout the application"""
+import os
 import struct
 import sys
-from functools import wraps, singledispatch
+from functools import singledispatch, wraps
 from typing import Callable, Union, overload
 
 from compressor.constants import ENC
@@ -9,7 +10,8 @@ from compressor.constants import ENC
 
 def default_filename(filename: str) -> str:
     """Default composition for the name to be used"""
-    return "{0}.comp".format(filename)
+    basename = os.path.basename(filename)
+    return '{basename}.comp'.format(basename=basename)
 
 
 def endianess_prefix(parm_type=str) -> Union[str, bytes]:
