@@ -12,7 +12,7 @@ typehint:
 
 .PHONY: testdeps
 testdeps:
-	pip install -U -e .[tests]
+	pip install -Ue .[tests]
 
 .PHONY: test
 test:

@@ -2,8 +2,8 @@ from setuptools import setup
 
 from compressor.constants import VERSION
 
-tests_require = ['pytest', 'pytest-cov', 'codecov', 'mypy', 'pylint']
-docs_require = ['Sphinx', 'sphinx-autodoc-annotation']
+tests_require = ('pytest', 'pytest-cov', 'codecov', 'mypy', 'pylint')
+docs_require = ('Sphinx', 'sphinx-autodoc-annotation')
 
 
 with open('README.rst', 'r') as readme:
