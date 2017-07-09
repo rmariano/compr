@@ -1,7 +1,7 @@
 """Tests for the set of functions defined in compressor.functions"""
 import sys
 
-from compressor.functions import (brand_filename, endianess_prefix, pack,
+from compressor.functions import (default_filename, endianess_prefix, pack,
                                   tobinary, unpack)
 
 
@@ -34,7 +34,7 @@ def test_packing(monkeypatch):
 
 
 def test_default_filename():
-    assert brand_filename('file') == 'file.comp'
+    assert default_filename('file') == 'file.comp'
 
 
 def test_tobinary_int():

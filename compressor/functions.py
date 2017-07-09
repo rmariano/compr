@@ -7,7 +7,7 @@ from typing import Callable, Union, overload
 from compressor.constants import ENC
 
 
-def brand_filename(filename: str) -> str:
+def default_filename(filename: str) -> str:
     """Default composition for the name to be used"""
     return "{0}.comp".format(filename)
 
@@ -76,7 +76,7 @@ def tobinary(obj) -> str:
     return str(obj)
 
 
-@overload
+@overload  # type: ignore
 @tobinary.register(int)
 def _(number) -> str:
     """Return the ``str`` for the binary representation of ``number``.

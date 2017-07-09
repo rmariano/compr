@@ -13,7 +13,7 @@ from functools import total_ordering
 from typing import List, Sequence, io  # type: ignore
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
-from compressor.functions import brand_filename, pack, unpack, tobinary
+from compressor.functions import default_filename, pack, unpack, tobinary
 
 
 @total_ordering
@@ -239,7 +239,7 @@ def save_compressed_file(filename: str, table: dict, checksum: int,
     Given the original file by its `filename`, save a new one.
     `table` contains the new codes for each character on `filename`.
     """
-    new_file = dest_file or brand_filename(filename)
+    new_file = dest_file or default_filename(filename)
 
     with open(new_file, 'wb') as target:
         _save_checksum(target, checksum)
