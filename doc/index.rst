@@ -49,6 +49,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   using-the-cli
    modules
 
 
@@ -59,4 +60,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
