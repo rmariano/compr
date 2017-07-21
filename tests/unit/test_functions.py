@@ -38,7 +38,17 @@ def test_default_filename_base_file():
 
 
 def test_default_filename_abs_path():
-    assert default_filename('/usr/local/bin/custom_filename.txt') == 'custom_filename.txt.comp'
+    got = default_filename('/usr/local/bin/custom_filename.txt')
+    assert got == 'custom_filename.txt.comp'
+
+
+def test_default_filename_different_suffix():
+    assert default_filename('base', 'extr') == 'base.extr'
+
+
+def test_default_abs_filename_different_suffix():
+    assert default_filename('/usr/local/file', 'extr') == 'file.extr'
+    assert default_filename('/usr/loca/f2', suffix='foo') == 'f2.foo'
 
 
 def test_tobinary_int():
