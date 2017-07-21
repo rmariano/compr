@@ -305,7 +305,7 @@ def retrieve_compressed_file(filename: str, dest_file: str = '') -> None:
         map_table = retrieve_table(src)
         table = _reorganize_table_keys(map_table)
 
-        dest_filename = dest_file or "{}.extr".format(filename)
+        dest_filename = dest_file or default_filename(filename, suffix='extr')
         stream = decode_file_content(src, table, checksum)
         # Dump the decoded extraction into its destination
         with open(dest_filename, 'w+') as out:

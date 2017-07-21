@@ -8,10 +8,13 @@ from typing import Callable, Union, overload
 from compressor.constants import ENC
 
 
-def default_filename(filename: str) -> str:
-    """Default composition for the name to be used"""
+def default_filename(filename: str, suffix: str = 'comp') -> str:
+    """Default composition for the name to be used.
+    If suffix is not specified, use ``comp`` as default one, assuming the
+    operation in course is a compression.
+    """
     basename = os.path.basename(filename)
-    return '{basename}.comp'.format(basename=basename)
+    return '{basename}.{suffix}'.format(basename=basename, suffix=suffix)
 
 
 def endianess_prefix(parm_type=str) -> Union[str, bytes]:
