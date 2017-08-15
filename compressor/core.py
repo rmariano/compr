@@ -154,7 +154,7 @@ def save_table(dest_file: io, table: dict) -> None:
     dest_file.write(pack('{0}L'.format(offset), *codecs))
 
 
-def process_line_compression(buffer_line: bytes, output_file: io,
+def process_line_compression(buffer_line: str, output_file: io,
                              table: dict) -> None:
     """
     Transform `buffer_line` into the new code, per-byte, based on `table`
