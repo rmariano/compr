@@ -3,7 +3,7 @@ from argparse import Namespace
 
 import pytest
 
-from compressor import argument_parser, parse_arguments
+from compressor.cli import argument_parser, parse_arguments
 from compressor.constants import VERSION
 
 

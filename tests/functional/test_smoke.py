@@ -1,12 +1,10 @@
-import glob
 import hashlib
-import os
-import subprocess
 import tempfile
+import pytest
 from typing import List
 
-from compressor import main_engine
-from tests import BaseTest
+from compressor.cli import main_engine
+from tests.conftest import data_files, data_store
 
 
 def _all_files_identical(*files: List[str]) -> bool:
