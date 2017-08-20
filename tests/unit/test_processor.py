@@ -1,7 +1,9 @@
 """Unit tests the core functions"""
-import pytest
 import os
 import random
+from collections import deque
+
+import pytest
 
 from compressor.core import (create_tree_code, parse_tree_code,
                              process_frequencies)
@@ -43,10 +45,8 @@ def test_preffix_free(source):
     checksum = sum(c.freq for c in freqs)  # bytes
     t = create_tree_code(freqs)
     table = parse_tree_code(t)
-    codes = sorted(table.values(), key=lambda x: (len(x), x))
-    current_code = codes.pop(0)
-    while codes:
-        for code in codes:
-            assert not code.startswith(current_code), \
-                    "{} is prefix of {}".format(current_code, code)
-        current_code = codes.pop(0)
+
+    codes = deque(table.values())
+    for code_to_check in codes:
+        prefix = {c for c in codes if c.startswith(code_to_check)}
+        assert prefix == {code_to_check}
