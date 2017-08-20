@@ -4,7 +4,7 @@ code.
 This should contain definitions for values that do not change while the program
 is running, and are to remain constant throughout the execution
 """
-VERSION = '0.1.0'
+from compressor import __version__ as VERSION
 
 ENC = 'utf-8'
 BYTE = 8
