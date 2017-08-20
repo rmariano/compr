@@ -1,7 +1,6 @@
 """Unit tests the core functions"""
 import os
-import random
-from collections import deque
+from collections import Counter, deque
 
 import pytest
 
@@ -21,19 +20,16 @@ def test_stream_counter_data(data_store):
     assert mapped_result == expected
 
 
-def test_stream_counter_randomized():
-    selected_chars = ('a', 'Z', 'e', 'g', 'd', 's', 't', 'm', 'r', 'l')
-    stream = ''
-    expected = {k: 0 for k in selected_chars}
-    for _ in range(100):
-        multiplier = random.randint(1, 100)
-        char = random.choice(selected_chars)
-        stream += char * multiplier
-        expected[char] += multiplier
+@pytest.mark.parametrize('source', data_files(data_store()))
+def test_frequencies_add_up(source):
+    with open(source, 'r') as f:
+        content = f.read()
 
-    result = process_frequencies(stream)
-    mapped_result = {node.value: node.freq for node in result}
-    assert mapped_result == expected
+    frequencies = process_frequencies(content)
+    checksum = sum(c.freq for c in frequencies)
+    expected = sum(Counter(content).values())
+
+    assert checksum == expected
 
 
 @pytest.mark.parametrize('source', data_files(data_store()))
@@ -42,7 +38,6 @@ def test_preffix_free(source):
     with open(source, 'r') as f:
         freqs = process_frequencies(f.read())
 
-    checksum = sum(c.freq for c in freqs)  # bytes
     t = create_tree_code(freqs)
     table = parse_tree_code(t)
 
