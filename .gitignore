@@ -12,3 +12,5 @@ htmlcov/
 doc/_build
 .eggs/
 .tox/
+.mypy_cache/
+*.comp

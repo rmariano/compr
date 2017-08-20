@@ -27,9 +27,9 @@ checklist: testdeps lint typehint test
 
 .PHONY: clean
 clean:
-	rm .coverage
-	rm -fr .cache/ .tox/ build/
+	rm -fr .coverage .cache/ .tox/ build/ .mypy_cache/ *.comp
 	find . -type f -name "*.pyc" -delete
+	find . -type d -name "__pycache__" -exec rm -fr {} +
 
 .PHONY: doc
 doc:
