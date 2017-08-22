@@ -4,6 +4,28 @@ compressor package
 Submodules
 ----------
 
+Module contents
+---------------
+
+.. automodule:: compressor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+lib module
+----------
+
+.. automodule:: compressor.lib
+   :members:
+
+cli module
+----------
+
+.. automodule:: compressor.cli
+   :members:
+
+
 compressor.core module
 ----------------------
 
@@ -13,10 +35,8 @@ compressor.core module
     :show-inheritance:
 
 
-Module contents
----------------
+functions module
+----------------
 
-.. automodule:: compressor
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. automodule:: compressor.functions
+   :members:
