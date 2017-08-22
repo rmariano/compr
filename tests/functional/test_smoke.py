@@ -1,7 +1,9 @@
 import hashlib
+import subprocess
 import tempfile
-import pytest
 from typing import List
+
+import pytest
 
 from compressor.cli import main_engine
 from tests.conftest import data_files, data_store
@@ -32,3 +34,9 @@ def test_compress_and_retrieve_datasets(source):
     extracted = tempfile.NamedTemporaryFile().name
     main_engine(target, extract=True, compress=False, dest_file=extracted)
     assert _all_files_identical(source, extracted)
+
+
+def test_cli_invocation():
+    """The entry point works"""
+    st_code = subprocess.check_call(('pycompress', '-h'))
+    assert st_code == 0
