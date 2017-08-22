@@ -22,7 +22,7 @@ For example, in order to compress one file:
 
 .. code:: bash
 
-    $ pycompress -c -d /tmp/compressed.zf /usr/share/dict/words
+    $ pycompress -c /usr/share/dict/words -d /tmp/compressed.zf
 
 The original file, in this example has a size of ``~4.8M``, and the tool left
 the resulting file at ``/tmp/compressed.zf``, with a size of ``~2.7M``.
@@ -31,7 +31,7 @@ In order to extract it:
 
 .. code:: bash
 
-    $ pycompress -x -d /tmp/original /tmp/compressed.zf
+    $ pycompress -x /tmp/compressed.zf -d /tmp/original
 
 You can specify the name of the resulting file with the ``-d`` flag. If you
 don't indicate a name for the resulting file, the default will be
