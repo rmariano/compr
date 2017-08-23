@@ -44,7 +44,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'pycompress = compressor:main',
+            'pycompress = compressor.cli:main',
         ],
     },
 )

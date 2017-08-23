@@ -71,7 +71,6 @@ def main_engine(filename: str, extract: bool = False,
 
     :return: 0 if executed without problems.
     """
-    assert extract is not compress, "Cannot both extract & compress"
     if compress:
         compress_file(filename, dest_file)
     if extract:

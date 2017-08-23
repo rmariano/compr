@@ -24,7 +24,7 @@ file named ``words.comp``.
 You can change the name of the resulting file, by passing the `-d`
 (destination) flag, like in::
 
-    $ pycompress -c -d /tmp/compressed.zf /usr/share/dict/words
+    $ pycompress -c /usr/share/dict/words -d /tmp/compressed.zf
 
 In this case the resulting file (after compressed) will be
 ``/tmp/compressed.zf``.
@@ -45,7 +45,7 @@ being applied. In this case, it would be ``compressed.zf.extr``.
 You can also indicate the name of the destination file, again with the ``-d``
 parameter::
 
-    $ pycompress -x -d /tmp/original /tmp/compressed.zf
+    $ pycompress -x /tmp/compressed.zf -d /tmp/original
 
 The destination file in this case, indicates that after extracted the file is
 written in ``/tmp/original``.
