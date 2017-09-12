@@ -53,6 +53,9 @@ class CharNode:
     def __eq__(self, other) -> bool:
         return self.freq == other.freq
 
+    def __hash__(self):
+        return hash(self.freq)
+
     @property
     def value(self):
         """Expose the value being hold as read-only."""
