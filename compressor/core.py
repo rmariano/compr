@@ -13,7 +13,7 @@ from functools import total_ordering
 from typing import List, Sequence, io  # type: ignore
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
-from compressor.functions import default_filename, pack, tobinary, unpack
+from compressor.util import default_filename, pack, tobinary, unpack
 
 
 @total_ordering

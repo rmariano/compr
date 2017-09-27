@@ -1,8 +1,8 @@
 """Tests for the set of functions defined in compressor.functions"""
 import sys
 
-from compressor.functions import (default_filename, endianess_prefix, pack,
-                                  tobinary, unpack)
+from compressor.util import (default_filename, endianess_prefix, pack,
+                             tobinary, unpack)
 
 
 def test_endianess_prefix_bigendinan(monkeypatch):
