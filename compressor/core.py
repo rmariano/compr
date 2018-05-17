@@ -13,7 +13,8 @@ from functools import total_ordering
 from typing import List, Sequence, io  # type: ignore
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
-from compressor.util import default_filename, pack, tobinary, unpack
+from compressor.util import (StreamFile, default_filename, pack, tobinary,
+                             unpack)
 
 
 @total_ordering
@@ -196,11 +197,9 @@ def compress_and_save_content(input_filename: str,
     :param output_file:    opened file where to write the outcome
     :param table:          mapping table for the char encoding
     """
-    with open(input_filename, 'r') as source:
-        buff = source.read(BUFF_SIZE)
-        while buff:
+    with StreamFile(input_filename, BUFF_SIZE) as source:
+        for buff in source:
             process_line_compression(buff, output_file, table)
-            buff = source.read(BUFF_SIZE)
 
 
 def _sizeof(code: str) -> int:
