@@ -3,8 +3,12 @@
 High-level functions exposed as a library, that can be imported.
 """
 from compressor.core import retrieve_compressed_file as extract_file  # pylint: disable=unused-import
-from compressor.core import (create_tree_code, parse_tree_code,
-                             process_frequencies, save_compressed_file)
+from compressor.core import (
+    create_tree_code,
+    parse_tree_code,
+    process_frequencies,
+    save_compressed_file,
+)
 
 
 def compress_file(filename: str, dest_file: str = None) -> None:
@@ -15,7 +19,7 @@ def compress_file(filename: str, dest_file: str = None) -> None:
     :param dest_file: The name of the target file. If not provided (None),
                       a default will be used with `<filename>.comp`
     """
-    with open(filename, 'r') as source:
+    with open(filename, "r") as source:
         freqs = process_frequencies(source.read())
 
     checksum = sum(c.freq for c in freqs)  # bytes

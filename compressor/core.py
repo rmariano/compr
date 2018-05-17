@@ -13,7 +13,7 @@ from functools import total_ordering
 from typing import List, Sequence, io  # type: ignore
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
-from compressor.functions import default_filename, pack, tobinary, unpack
+from compressor.functions import pack, tobinary, unpack
 
 
 @total_ordering
@@ -88,17 +88,18 @@ def create_tree_code(charset: List[CharNode]) -> CharNode:
         right_char = heapq.heappop(alpha_heap)
 
         new_symbol = CharNode(
-            value='{0.value}{1.value}'.format(left_char, right_char),
+            value="{0.value}{1.value}".format(left_char, right_char),
             freq=left_char.freq + right_char.freq,
             left=left_char,
-            right=right_char
+            right=right_char,
         )
         heapq.heappush(alpha_heap, new_symbol)
     return heapq.heappop(alpha_heap)
 
 
-def parse_tree_code(tree: CharNode, table: dict = None,
-                    code: bytes = b'') -> dict:
+def parse_tree_code(
+    tree: CharNode, table: dict = None, code: bytes = b""
+) -> dict:
     """
     Given the tree with the chars-frequency processed, return a table that
     maps each character with its binary representation on the new code:
@@ -144,18 +145,21 @@ def save_table(dest_file: io, table: dict) -> None:
     :param table:     Mapping table with the chars and their codes.
     """
     offset = len(table)
-    tokens = [(char.encode(ENC), int(b'1' + codec, base=2))
-              for char, codec in table.items()]
+    tokens = [
+        (char.encode(ENC), int(b"1" + codec, base=2))
+        for char, codec in table.items()
+    ]
 
     chars, codecs = zip(*tokens)
 
-    dest_file.write(pack('i', offset))
-    dest_file.write(pack('{0}c'.format(offset), *chars))
-    dest_file.write(pack('{0}L'.format(offset), *codecs))
+    dest_file.write(pack("i", offset))
+    dest_file.write(pack("{0}c".format(offset), *chars))
+    dest_file.write(pack("{0}L".format(offset), *codecs))
 
 
-def process_line_compression(buffer_line: str, output_file: io,
-                             table: dict) -> None:
+def process_line_compression(
+    buffer_line: str, output_file: io, table: dict
+) -> None:
     """
     Transform `buffer_line` into the new code, per-byte, based on `table`
     and save the new byte-stream into `output_file`.
@@ -165,29 +169,30 @@ def process_line_compression(buffer_line: str, output_file: io,
     :param table:       Translation table for the characters in `buffer_line`.
     """
     bitarray = []  # type: list
-    chr_buffer = b''
+    chr_buffer = b""
     for char in buffer_line:
         encoded_char = table[char]
         chr_buffer += encoded_char
         bitarray.extend(int(chr(x)) for x in encoded_char)
 
-    array_str = ''.join(str(x) for x in bitarray)
+    array_str = "".join(str(x) for x in bitarray)
     # Add a sentinel first bit
-    array_str = '1' + array_str
-    array_str += '0' * (BYTE - (len(array_str) % BYTE))  # 0-pad
+    array_str = "1" + array_str
+    array_str += "0" * (BYTE - (len(array_str) % BYTE))  # 0-pad
 
     stream = hex(int(array_str, 2))[2:]
     block = binascii.a2b_hex(stream)
     block_length = len(array_str) // BYTE
     original_length = len(buffer_line)
 
-    output_file.write(pack('I', block_length))
-    output_file.write(pack('I', original_length))
+    output_file.write(pack("I", block_length))
+    output_file.write(pack("I", original_length))
     output_file.write(block)
 
 
-def compress_and_save_content(input_filename: str,
-                              output_file: io, table: dict) -> None:
+def compress_and_save_content(
+    input_filename: str, output_file: io, table: dict
+) -> None:
     """
     Opens and processes <input_filename>. Iterates over the file and writes
     the contents on output_file.
@@ -196,7 +201,7 @@ def compress_and_save_content(input_filename: str,
     :param output_file:    opened file where to write the outcome
     :param table:          mapping table for the char encoding
     """
-    with open(input_filename, 'r') as source:
+    with open(input_filename, "r") as source:
         buff = source.read(BUFF_SIZE)
         while buff:
             process_line_compression(buff, output_file, table)
@@ -204,7 +209,7 @@ def compress_and_save_content(input_filename: str,
 
 
 def _sizeof(code: str) -> int:
-    sizes = {'i': 4, 'c': 1, 'L': 4, 'I': 4}
+    sizes = {"i": 4, "c": 1, "L": 4, "I": 4}
     return sizes.get(code, 1)
 
 
@@ -213,42 +218,44 @@ def retrieve_table(dest_file: io) -> dict:
     Read the binary file, and return the translation table as a reversed
     dictionary.
     """
-    offset, *_ = unpack('i', dest_file.read(_sizeof('i')))
-    chars = dest_file.read(offset * _sizeof('c'))
-    codes = dest_file.read(offset * _sizeof('L'))
+    offset, *_ = unpack("i", dest_file.read(_sizeof("i")))
+    chars = dest_file.read(offset * _sizeof("c"))
+    codes = dest_file.read(offset * _sizeof("L"))
 
-    chars = unpack('{}c'.format(offset), chars)
-    codes = unpack('{}L'.format(offset), codes)
-    return {"b{0}".format(tobinary(code)): str(char, encoding=ENC)
-            for char, code in zip(chars, codes)}
+    chars = unpack("{}c".format(offset), chars)
+    codes = unpack("{}L".format(offset), codes)
+    return {
+        "b{0}".format(tobinary(code)): str(char, encoding=ENC)
+        for char, code in zip(chars, codes)
+    }
 
 
 def _save_checksum(ofile: io, checksum: int):
     """Persist the number of bytes as the first byte in <ofile>."""
-    ofile.write(pack('L', checksum))
+    ofile.write(pack("L", checksum))
 
 
 def _retrieve_checksum(ifile: io) -> int:
-    rawdata = ifile.read(_sizeof('L'))
-    return unpack('L', rawdata)[0]
+    rawdata = ifile.read(_sizeof("L"))
+    return unpack("L", rawdata)[0]
 
 
-def save_compressed_file(filename: str, table: dict, checksum: int,
-                         dest_file: str = '') -> None:
+def save_compressed_file(
+    filename: str, table: dict, checksum: int, dest_filename: str
+) -> None:
     """
     Given the original file by its `filename`, save a new one.
     `table` contains the new codes for each character on `filename`.
     """
-    new_file = dest_file or default_filename(filename)
-
-    with open(new_file, 'wb') as target:
+    with open(dest_filename, "wb") as target:
         _save_checksum(target, checksum)
         save_table(target, table)
         compress_and_save_content(filename, target, table)
 
 
-def _decode_block(binary_content: bytes, table: dict,
-                  block_length: int) -> str:
+def _decode_block(
+    binary_content: bytes, table: dict, block_length: int
+) -> str:
     """Transform the compressed content of a block into the original text."""
     newchars = []
     cont = binascii.hexlify(binary_content)
@@ -269,7 +276,7 @@ def _decode_block(binary_content: bytes, table: dict,
             break
         window_start, window_end = window_end, window_end + 1
         part = bitarray[window_start:window_end]
-    return ''.join(newchars)[:block_length]
+    return "".join(newchars)[:block_length]
 
 
 def decode_file_content(compfile: io, table: dict, checksum: int) -> str:
@@ -277,16 +284,16 @@ def decode_file_content(compfile: io, table: dict, checksum: int) -> str:
     Reconstruct the remaining part of the <compfile>, starting right after
     the metadata, decoding each bit according to the <table>.
     """
-    original_stream = ''
-    next_block = compfile.read(_sizeof('I'))
+    original_stream = ""
+    next_block = compfile.read(_sizeof("I"))
     while len(original_stream) < checksum and next_block:
-        block_size, *_ = unpack('I', next_block)
-        block_length, *_ = unpack('I', compfile.read(_sizeof('I')))
+        block_size, *_ = unpack("I", next_block)
+        block_length, *_ = unpack("I", compfile.read(_sizeof("I")))
         binary_content = compfile.read(block_size)
         retrieved = _decode_block(binary_content, table, block_length)
 
         original_stream += retrieved
-        next_block = compfile.read(_sizeof('I'))
+        next_block = compfile.read(_sizeof("I"))
     return original_stream
 
 
@@ -295,18 +302,17 @@ def _reorganize_table_keys(table: dict) -> dict:
     return {k[2:]: v for k, v in table.items()}
 
 
-def retrieve_compressed_file(filename: str, dest_file: str = '') -> None:
+def retrieve_compressed_file(filename: str, dest_filename: str) -> None:
+    """Reconstruct the original file from the compressed copy.
+
+    Write the output in file indicated by ``dest_filename``.
     """
-    EXTRACT - Reconstruct the original file from the compressed copy.
-    Write the output in the indicated `dest_file`.
-    """
-    with open(filename, 'rb') as src:
+    with open(filename, "rb") as src:
         checksum = _retrieve_checksum(src)
         map_table = retrieve_table(src)
         table = _reorganize_table_keys(map_table)
 
-        dest_filename = dest_file or default_filename(filename, suffix='extr')
         stream = decode_file_content(src, table, checksum)
         # Dump the decoded extraction into its destination
-        with open(dest_filename, 'w+') as out:
+        with open(dest_filename, "w+") as out:
             out.write(stream)

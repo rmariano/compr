@@ -5,7 +5,7 @@ from typing import List
 
 import pytest
 
-from compressor.cli import main_engine
+from compressor.cli import PyCompressor
 from tests.conftest import data_files, data_store
 
 
@@ -29,10 +29,11 @@ def test_compress_and_retrieve_datasets(source):
     """
     target = tempfile.NamedTemporaryFile().name
     # Compress
-    main_engine(source, compress=True, dest_file=target)
+    PyCompressor(source, compress=True, dest_file=target).run()
     # Now extract
     extracted = tempfile.NamedTemporaryFile().name
-    main_engine(target, extract=True, compress=False, dest_file=extracted)
+    PyCompressor(target, extract=True, compress=False,
+                 dest_file=extracted).run()
     assert _all_files_identical(source, extracted)
 
 
