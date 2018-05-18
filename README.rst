@@ -96,3 +96,11 @@ run:
 .. code:: bash
 
     make tox
+
+Code is formatted using black. Just run
+
+.. code:: bash
+
+    make format
+
+And this will take care of the formatting automatically.

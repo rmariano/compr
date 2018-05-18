@@ -22,6 +22,11 @@ test:
 lint:
 	@./tests/checklist/linting.sh
 
+.PHONY: format
+format:
+	pip install -U black
+	black -l79 compressor/*.py tests/*.py tests/*/*.py
+
 .PHONY: checklist
 checklist: testdeps lint typehint test
 
