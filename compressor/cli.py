@@ -60,6 +60,10 @@ class PyCompressor:
 
     Interpret the parameters, and run the corresponding actions.
     """
+    ACTION_OPERATIONS = {
+        Actions.COMPRESS: compress_file,
+        Actions.EXTRACT: extract_file,
+    }
 
     def __init__(
         self,
@@ -76,25 +80,21 @@ class PyCompressor:
         :param dest_file: Optional name of the target file.
         """
         self._filename = filename
-        self._extract = extract
-        self._compress = compress
+        self._action = Actions.from_flags(compress, extract)
         self._dest_file = dest_file
         self._output_dir = output_dir
 
     @property
     def destination(self) -> str:
         """Compute the destination where the output file is to be written."""
-        action = Actions.from_flags(self._compress, self._extract)
         output_filename = OutputFileName(
-            self._filename, action, self._dest_file, self._output_dir
+            self._filename, self._action, self._dest_file, self._output_dir
         )
         return output_filename.value
 
     def run(self) -> int:
-        if self._compress:
-            compress_file(self._filename, self.destination)
-        if self._extract:
-            extract_file(self._filename, self.destination)
+        operation = self.ACTION_OPERATIONS[self._action]
+        operation(self._filename, self.destination)
         return 0
 
 
