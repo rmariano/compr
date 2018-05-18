@@ -91,11 +91,8 @@ class PyCompressor:
 
     @property
     def destination_file(self):
-        return (
-            self._dest_file
-            or default_filename(
-                self._filename, self._default_extension_for_action()
-            )
+        return self._dest_file or default_filename(
+            self._filename, self._default_extension_for_action()
         )
 
     def _prefix_directory(self) -> str:

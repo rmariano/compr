@@ -2,7 +2,9 @@
 
 High-level functions exposed as a library, that can be imported.
 """
-from compressor.core import retrieve_compressed_file as extract_file  # pylint: disable=unused-import
+from compressor.core import (
+    retrieve_compressed_file as extract_file
+)  # pylint: disable=unused-import
 from compressor.core import (
     create_tree_code,
     parse_tree_code,
