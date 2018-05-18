@@ -1,5 +1,5 @@
 """Logic associated with the output (destination or target) files."""
-import os
+from pathlib import Path
 
 from compressor.functions import default_filename
 from compressor.constants import Actions
@@ -16,25 +16,21 @@ class OutputFileName:
         destination_filename: str = None,
         output_dir: str = None,
     ):
-        self._original_filename = original_filename
-        self.default_extension = self.DEFAULT_EXTENSIONS[action]
-        self._destination_filename = destination_filename
-        self._output_dir = output_dir
-
-    def _final_output_filename(self):
-        """Only the file name, without being prefixed by the directory."""
-        return self._destination_filename or default_filename(
-            self._original_filename, suffix=self.default_extension
+        self._original_filename: Path = Path(original_filename)
+        self.default_extension: str = self.DEFAULT_EXTENSIONS[action]
+        self._destination_filename: Path = Path(
+            destination_filename or
+            default_filename(original_filename, suffix=self.default_extension)
         )
+        self._output_dir: Path = None
+        if output_dir is not None:
+            self._output_dir = Path(output_dir)
 
-    def _prefix_directory(self, output_filename) -> str:
+    def _under_directory(self) -> Path:
         if self._output_dir is None:
-            return output_filename
-
-        filename = os.path.basename(output_filename)
-        return os.path.join(self._output_dir, filename)
+            return self._destination_filename
+        return self._output_dir / self._destination_filename.name
 
     @property
-    def value(self):
-        output_filename_so_far = self._final_output_filename()
-        return self._prefix_directory(output_filename_so_far)
+    def value(self) -> str:
+        return str(self._under_directory())
