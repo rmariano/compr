@@ -4,11 +4,10 @@ Exposes the entry point to the program for executing as command line.
 """
 import argparse
 import sys
-import os
 
-from compressor.constants import VERSION
+from compressor.constants import VERSION, Actions
 from compressor.lib import compress_file, extract_file
-from compressor.functions import default_filename
+from compressor.output import OutputFileName
 
 
 def argument_parser() -> argparse.ArgumentParser:
@@ -82,29 +81,14 @@ class PyCompressor:
         self._dest_file = dest_file
         self._output_dir = output_dir
 
-    def _default_extension_for_action(self) -> str:
-        if self._compress:
-            return "comp"
-        elif self._extract:
-            return "extr"
-        assert False, "Unknown action"
-
-    @property
-    def destination_file(self):
-        return self._dest_file or default_filename(
-            self._filename, self._default_extension_for_action()
-        )
-
-    def _prefix_directory(self) -> str:
-        if self._output_dir is None:
-            return self.destination_file
-        filename = os.path.basename(self.destination_file)
-        return os.path.join(self._output_dir, filename)
-
     @property
     def destination(self) -> str:
         """Compute the destination where the output file is to be written."""
-        return self._prefix_directory()
+        action = Actions.from_flags(self._compress, self._extract)
+        output_filename = OutputFileName(
+            self._filename, action, self._dest_file, self._output_dir
+        )
+        return output_filename.value
 
     def run(self) -> int:
         if self._compress:
