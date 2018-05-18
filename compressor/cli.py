@@ -81,16 +81,9 @@ class PyCompressor:
         """
         self._filename = filename
         self._action = Actions.from_flags(compress, extract)
-        self._dest_file = dest_file
-        self._output_dir = output_dir
-
-    @property
-    def destination(self) -> str:
-        """Compute the destination where the output file is to be written."""
-        output_filename = OutputFileName(
-            self._filename, self._action, self._dest_file, self._output_dir
-        )
-        return output_filename.value
+        self.destination = OutputFileName(
+            filename, self._action, dest_file, output_dir
+        ).value
 
     def run(self) -> int:
         operation = self.ACTION_OPERATIONS[self._action]
