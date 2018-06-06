@@ -1,8 +1,9 @@
 """Tests for the set of functions defined in compressor.functions"""
 import sys
+import tempfile
 
-from compressor.functions import (default_filename, endianess_prefix, pack,
-                                  tobinary, unpack)
+from compressor.util import (default_filename, endianess_prefix, pack,
+                             tobinary, unpack, StreamFile)
 
 
 def test_endianess_prefix_bigendinan(monkeypatch):
@@ -64,3 +65,26 @@ def test_tobinary_string():
 def test_tobinary_bytes():
     assert tobinary(b'ff') == tobinary(255)
     assert tobinary(b'A') == '1010'
+
+
+def test_stream_file_chunks():
+    with tempfile.NamedTemporaryFile() as data:
+        for i in range(10):
+            data.write(b"i")
+        data.flush()
+
+        with StreamFile(data.name, chunk_size=1) as buffered:
+            composed = list(buffered)
+
+    assert composed == ["i" for _ in range(10)]
+
+
+def test_streamed_file_closed():
+    with tempfile.NamedTemporaryFile() as data:
+        data.write(b"something")
+        data.flush()
+
+        with StreamFile(data.name, chunk_size=10) as buffered:
+            list(buffered)
+
+        assert buffered._data_source.closed
