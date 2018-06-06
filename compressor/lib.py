@@ -2,9 +2,12 @@
 
 High-level functions exposed as a library, that can be imported.
 """
-from compressor.core import retrieve_compressed_file as extract_file  # pylint: disable=unused-import
+
+from compressor.char_node import CharNode  # pylint: disable=unused-import
 from compressor.core import (create_tree_code, parse_tree_code,
-                             process_frequencies, save_compressed_file)
+                             process_frequencies)
+from compressor.core import retrieve_compressed_file as extract_file  # pylint: disable=unused-import
+from compressor.core import save_compressed_file
 
 
 def compress_file(filename: str, dest_file: str = "") -> None:

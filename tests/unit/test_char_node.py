@@ -1,4 +1,4 @@
-from compressor.core import CharNode
+from compressor.char_node import CharNode
 
 
 def test_charnode_eq():
