@@ -1,3 +1,5 @@
+import pytest
+
 from compressor.char_node import CharNode
 
 
@@ -30,3 +32,8 @@ def test_merge_nodes():
     assert new_node.freq == left_char.freq + right_char.freq
     assert new_node.left is left_char
     assert new_node.right is right_char
+
+
+def test_merge_invalid_nodes():
+    with pytest.raises(TypeError):
+        CharNode("A", 1) + "B"
