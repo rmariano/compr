@@ -18,7 +18,7 @@ def compress_file(filename: str, dest_file: str = "") -> None:
     :param dest_file: The name of the target file. If not provided (None),
                       a default will be used with `<filename>.comp`
     """
-    with open(filename, 'r') as source:
+    with open(filename, "r") as source:
         freqs = process_frequencies(source.read())
 
     checksum = sum(c.freq for c in freqs)  # bytes
