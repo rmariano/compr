@@ -4,7 +4,7 @@ build:
 
 .PHONY: dev
 dev:
-	pip install -e .
+	pipenv install --dev -e .
 
 .PHONY: typehint
 typehint:
@@ -12,11 +12,19 @@ typehint:
 
 .PHONY: testdeps
 testdeps:
-	pip install -Ue .[tests]
+	pipenv install --dev -e .[tests]
+	touch testdeps
+
+.PHONY: unit
+unit: testdeps
+	pipenv run pytest -sv tests/unit/
+
+.PHONY: functional
+functional:
+	pipenv run pytest -sv tests/functional/
 
 .PHONY: test
-test:
-	pytest
+test: unit functional
 
 .PHONY: lint
 lint:
@@ -33,8 +41,8 @@ clean:
 
 .PHONY: doc
 doc:
-	pip install -e .[docs]
-	make -C doc/ html
+	pipenv install --dev -e .[docs]
+	pipenv run make -C doc/ html
 	@xdg-open doc/_build/html/index.html
 
 .PHONY: tox
