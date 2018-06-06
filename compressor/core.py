@@ -35,12 +35,7 @@ def create_tree_code(charset: List[CharNode]) -> CharNode:
         left_char = heapq.heappop(alpha_heap)
         right_char = heapq.heappop(alpha_heap)
 
-        new_symbol = CharNode(
-            value='{0.value}{1.value}'.format(left_char, right_char),
-            freq=left_char.freq + right_char.freq,
-            left=left_char,
-            right=right_char
-        )
+        new_symbol = left_char + right_char
         heapq.heappush(alpha_heap, new_symbol)
     return heapq.heappop(alpha_heap)
 
