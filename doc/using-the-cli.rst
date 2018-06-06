@@ -49,3 +49,23 @@ parameter::
 
 The destination file in this case, indicates that after extracted the file is
 written in ``/tmp/original``.
+
+
+Command-Line Arguments
+**********************
+Options that can be passed to the command line application.
+
+-h, --help
+    Show help message and exit
+
+-c, --compress
+    Compress the file passed by parameter.
+
+-x, --extract
+    Extract the file passed by parameter.
+
+-d DEST_FILE, --dest-file DEST_FILE
+    Destination File Name
+
+-v, --version
+    show program's version number and exit
