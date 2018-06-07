@@ -47,8 +47,8 @@ doc:
 
 .PHONY: tox
 tox:
-	pip install -U tox
-	tox
+	pipenv install tox
+	pipenv run tox
 
 # use; make release VERSION=<version>
 .PHONY: release
