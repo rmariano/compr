@@ -13,8 +13,13 @@ from typing import List, Sequence, io  # type: ignore
 
 from compressor.constants import BUFF_SIZE, BYTE, ENC, LEFT, RIGHT
 from compressor.char_node import CharNode
-from compressor.util import (StreamFile, default_filename, pack, tobinary,
-                             unpack)
+from compressor.util import (
+    StreamFile,
+    default_filename,
+    pack,
+    tobinary,
+    unpack,
+)
 
 
 def create_tree_code(charset: List[CharNode]) -> CharNode:
@@ -41,7 +46,7 @@ def create_tree_code(charset: List[CharNode]) -> CharNode:
 
 
 def parse_tree_code(
-    tree: CharNode, table: dict = None, code: bytes = b""
+        tree: CharNode, table: dict = None, code: bytes = b""
 ) -> dict:
     """
     Given the tree with the chars-frequency processed, return a table that
@@ -101,7 +106,7 @@ def save_table(dest_file: io, table: dict) -> None:
 
 
 def process_line_compression(
-    buffer_line: str, output_file: io, table: dict
+        buffer_line: str, output_file: io, table: dict
 ) -> None:
     """
     Transform `buffer_line` into the new code, per-byte, based on `table`
@@ -134,7 +139,7 @@ def process_line_compression(
 
 
 def compress_and_save_content(
-    input_filename: str, output_file: io, table: dict
+        input_filename: str, output_file: io, table: dict
 ) -> None:
     """
     Opens and processes <input_filename>. Iterates over the file and writes
@@ -182,7 +187,7 @@ def _retrieve_checksum(ifile: io) -> int:
 
 
 def save_compressed_file(
-    filename: str, table: dict, checksum: int, dest_file: str = ""
+        filename: str, table: dict, checksum: int, dest_file: str = ""
 ) -> None:
     """
     Given the original file by its `filename`, save a new one.
@@ -197,7 +202,7 @@ def save_compressed_file(
 
 
 def _decode_block(
-    binary_content: bytes, table: dict, block_length: int
+        binary_content: bytes, table: dict, block_length: int
 ) -> str:
     """Transform the compressed content of a block into the original text."""
     newchars = []

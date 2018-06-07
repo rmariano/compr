@@ -120,7 +120,7 @@ class StreamFile:
     ...         do_something_with(buffer)
     """
     def __init__(self, filename: str, chunk_size: int) -> None:
-        self.filename: int = filename
+        self.filename: str = filename
         self.chunk_size: int = chunk_size
         self._data_source = None
 

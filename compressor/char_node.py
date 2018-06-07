@@ -1,3 +1,8 @@
+"""compressor.char_node
+
+This object represents a character being processed in the file, along with its
+metadata, like the frequency of it (how many times it appears).
+"""
 from functools import total_ordering
 
 
