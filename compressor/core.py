@@ -49,10 +49,14 @@ class CharNode:
         :return:      self <= other
         :rtype: bool
         """
-        return self.freq <= other.freq
+        if self.__class__ is other.__class__:
+            return self.freq <= other.freq
+        return NotImplemented
 
     def __eq__(self, other) -> bool:
-        return self.freq == other.freq
+        if self.__class__ is other.__class__:
+            return self.freq == other.freq
+        return NotImplemented
 
     @property
     def value(self):
