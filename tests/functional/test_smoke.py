@@ -1,6 +1,7 @@
 import hashlib
 import subprocess
 import tempfile
+from itertools import groupby
 from typing import List
 
 import pytest
@@ -9,20 +10,26 @@ from compressor.cli import main_engine
 from tests.conftest import data_files, data_store
 
 
+def _all_equal(iterable):
+    group = groupby(iterable)
+    return next(group, True) and not next(group, False)
+
+
+def _all_file_hashes(*files: List[str]):
+    for filename in files:
+        with open(filename, "rb") as fname:
+            content = fname.read()
+            yield hashlib.sha256(content).hexdigest()
+
+
 def _all_files_identical(*files: List[str]) -> bool:
     """Check if the list of provided files are identical.
     returns :bool:
     """
-    hashes = set()
-    for filename in files:
-        with open(filename, 'rb') as fname:
-            content = fname.read()
-            hashed = hashlib.sha256(content).hexdigest()
-            hashes.add(hashed)
-    return len(hashes) == 1
+    return _all_equal(_all_file_hashes(*files))
 
 
-@pytest.mark.parametrize('source', data_files(data_store()))
+@pytest.mark.parametrize("source", data_files(data_store()))
 def test_compress_and_retrieve_datasets(source):
     """Content must be unmodified, meaning the extracted file must
     match the content prior compression.
@@ -38,5 +45,5 @@ def test_compress_and_retrieve_datasets(source):
 
 def test_cli_invocation():
     """The entry point works"""
-    st_code = subprocess.check_call(('pycompress', '-h'))
+    st_code = subprocess.check_call(("pycompress", "-h"))
     assert st_code == 0
