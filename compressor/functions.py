@@ -96,7 +96,7 @@ def _(number) -> str:
 @overload
 @tobinary.register(str)
 @tobinary.register(bytes)
-def _(str_hex):
+def _(str_hex):  # type: ignore
     """If it is a string, we assume it's the HEX representation of the number.
 
     For example::
