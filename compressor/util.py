@@ -108,3 +108,34 @@ def _(str_hex):  # type: ignore
         '1010'
     """
     return tobinary(int(str_hex, 16))
+
+
+class StreamFile:
+    """Read a file by chunks, streaming each one at the time
+
+    Use as a context manager and iterable object.
+
+    >>> with StreamFile("some file", 1000) as source:
+    ...     for buffer in source:
+    ...         do_something_with(buffer)
+    """
+    def __init__(self, filename: str, chunk_size: int) -> None:
+        self.filename:int = filename
+        self.chunk_size:int = chunk_size
+        self._data_source = None
+
+    def __enter__(self):
+        self._data_source = open(self.filename)
+        return self
+
+    def __exit__(self, ex_type, ex_value, ex_tb):
+        self._data_source.close()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        data = self._data_source.read(self.chunk_size)
+        if not data:
+            raise StopIteration
+        return data
