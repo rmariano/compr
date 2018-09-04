@@ -58,6 +58,9 @@ class CharNode:
             return self.freq == other.freq
         return NotImplemented
 
+    def __hash__(self):
+        return hash(self.freq)
+
     @property
     def value(self):
         """Expose the value being hold as read-only."""
