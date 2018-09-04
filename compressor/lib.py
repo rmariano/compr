@@ -7,7 +7,7 @@ from compressor.core import (create_tree_code, parse_tree_code,
                              process_frequencies, save_compressed_file)
 
 
-def compress_file(filename: str, dest_file: str = None) -> None:
+def compress_file(filename: str, dest_file: str = "") -> None:
     """
     Open the <filename> and compress its contents on a new one.
 
