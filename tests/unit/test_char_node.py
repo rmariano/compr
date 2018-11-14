@@ -2,16 +2,28 @@ import pytest
 
 from compressor.char_node import CharNode
 
+
 def test_charnode_eq():
-    assert CharNode("first", 1) == CharNode("second", 1)
+    assert CharNode("a", 42) == CharNode("a", 42)
 
 
-def test_charnode_eq_type_mismatch():
-    assert CharNode("node", 1) != 1
+@pytest.mark.parametrize(
+    "charnode,different",
+    ((CharNode("node", 1), 1), (CharNode("first", 1), CharNode("second", 1))),
+)
+def test_charnode_eq_type_mismatch(charnode, different):
+    assert charnode != different
 
 
-def test_charnode_lt():
-    assert CharNode("smaller", 1) < CharNode("bigger", 2)
+@pytest.mark.parametrize(
+    "smaller,bigger",
+    (
+        (CharNode("smaller", 1), CharNode("bigger", 2)),
+        (CharNode("a", 4), CharNode("a", 5)),
+    ),
+)
+def test_charnode_lt(smaller, bigger):
+    assert smaller < bigger
 
 
 def test_charnode_le():

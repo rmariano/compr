@@ -38,10 +38,17 @@ class CharNode:
         :return:      self <= other
         :rtype: bool
         """
+        if self.__class__ is not other.__class__:
+            return NotImplemented
         return self.freq <= other.freq
 
     def __eq__(self, other) -> bool:
-        return self.freq == other.freq
+        if self.__class__ is not other.__class__:
+            return NotImplemented
+        return (self._value, self.freq) == (other.value, other.freq)
+
+    def __hash__(self):
+        return hash(self._value) ^ hash(self.freq)
 
     def __add__(self, other_node: "CharNode"):
         """Merge this node with the one received"""

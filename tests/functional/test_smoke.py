@@ -7,7 +7,7 @@ from typing import List
 import pytest
 
 from compressor.cli import main_engine
-from tests.conftest import data_files, data_store
+from tests.conftest import TEST_DATA_FILES
 
 
 def _all_equal(iterable):
@@ -29,7 +29,7 @@ def _all_files_identical(*files: List[str]) -> bool:
     return _all_equal(_all_file_hashes(*files))
 
 
-@pytest.mark.parametrize("source", data_files(data_store()))
+@pytest.mark.parametrize("source", TEST_DATA_FILES)
 def test_compress_and_retrieve_datasets(source):
     """Content must be unmodified, meaning the extracted file must
     match the content prior compression.

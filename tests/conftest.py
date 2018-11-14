@@ -2,9 +2,8 @@
 import glob
 import os
 
-
-TEST_DATA_FILES_LOCATION = os.path.join(os.path.dirname(__file__), 'data')
-TEST_DATA_FILES = glob.glob(os.path.join(TEST_DATA_FILES_LOCATION, '*.txt'))
+TEST_DATA_FILES_LOCATION = os.path.join(os.path.dirname(__file__), "data")
+TEST_DATA_FILES = glob.glob(os.path.join(TEST_DATA_FILES_LOCATION, "*.txt"))
 DATA_FILES_FIXTURE_NAME = "data_file"
 
 
