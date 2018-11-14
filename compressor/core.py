@@ -20,6 +20,8 @@ from compressor.util import (
     tobinary,
     unpack,
 )
+from compressor.util import (StreamFile, default_filename, pack, tobinary,
+                             unpack)
 
 
 def create_tree_code(charset: List[CharNode]) -> CharNode:

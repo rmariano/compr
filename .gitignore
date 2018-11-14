@@ -14,3 +14,5 @@ doc/_build
 .tox/
 .mypy_cache/
 *.comp
+.pytest_cache/
+.vscode

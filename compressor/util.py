@@ -8,13 +8,13 @@ from typing import Callable, Union, overload
 from compressor.constants import ENC
 
 
-def default_filename(filename: str, suffix: str = 'comp') -> str:
+def default_filename(filename: str, suffix: str = "comp") -> str:
     """Default composition for the name to be used.
     If suffix is not specified, use ``comp`` as default one, assuming the
     operation in course is a compression.
     """
     basename = os.path.basename(filename)
-    return '{basename}.{suffix}'.format(basename=basename, suffix=suffix)
+    return "{basename}.{suffix}".format(basename=basename, suffix=suffix)
 
 
 def endianess_prefix(parm_type=str) -> Union[str, bytes]:
@@ -26,7 +26,7 @@ def endianess_prefix(parm_type=str) -> Union[str, bytes]:
     :return:          '<' for little endian
                       '>' big endian
     """
-    value = '<' if sys.byteorder == 'little' else '>'
+    value = "<" if sys.byteorder == "little" else ">"
     if parm_type is bytes:
         return bytes(value, encoding=ENC)
     return value
@@ -43,6 +43,7 @@ def patched_struct(struct_function: Callable) -> Callable:
     :param struct_function: struct.pack | struct.unpack
     :return:                decorated <struct_function>
     """
+
     @wraps(struct_function)
     def wrapped(code: Union[str, bytes], *args):
         """
@@ -52,10 +53,12 @@ def patched_struct(struct_function: Callable) -> Callable:
         """
         endian = endianess_prefix(type(code))
         assert type(code) is type(endian), "Type mismatch: {} and {}".format(
-            type(code), type(endian))
+            type(code), type(endian)
+        )
         if not code.startswith(endian):  # type: ignore
             code = endian + code  # type: ignore
         return struct_function(code, *args)
+
     return wrapped
 
 
@@ -90,13 +93,13 @@ def _(number) -> str:
         >>> tobinary(42)
         '101010'
     """
-    return format(number, 'b')
+    return format(number, "b")
 
 
 @overload
 @tobinary.register(str)
 @tobinary.register(bytes)
-def _(str_hex):
+def _(str_hex):  # type: ignore
     """If it is a string, we assume it's the HEX representation of the number.
 
     For example::
@@ -119,9 +122,10 @@ class StreamFile:
     ...     for buffer in source:
     ...         do_something_with(buffer)
     """
+
     def __init__(self, filename: str, chunk_size: int) -> None:
-        self.filename: str = filename
-        self.chunk_size: int = chunk_size
+        self.filename = filename
+        self.chunk_size = chunk_size
         self._data_source = None
 
     def __enter__(self):
