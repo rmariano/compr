@@ -2,16 +2,21 @@
 import glob
 import os
 
-import pytest
+TEST_DATA_FILES_LOCATION = os.path.join(os.path.dirname(__file__), "data")
+TEST_DATA_FILES = glob.glob(os.path.join(TEST_DATA_FILES_LOCATION, "*.txt"))
+DATA_FILES_FIXTURE_NAME = "data_file"
 
 
-@pytest.fixture
-def data_store():
-    """Path where the data files are located"""
-    return os.path.join(os.path.dirname(__file__), 'data')
+def _load_files_contents(*files):
+    for fl in files:
+        with open(fl) as f:
+            yield f.read()
 
 
-@pytest.fixture
-def data_files(data_store):  # pylint: disable=redefined-outer-name
-    """Stream all file names on the test data directory, to be used on tests"""
-    yield from glob.glob(os.path.join(data_store, '*.txt'))
+def pytest_generate_tests(metafunc):
+    if DATA_FILES_FIXTURE_NAME in metafunc.fixturenames:
+        metafunc.parametrize(
+            DATA_FILES_FIXTURE_NAME,
+            _load_files_contents(*TEST_DATA_FILES),
+            ids=TEST_DATA_FILES,
+        )

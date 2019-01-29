@@ -1,10 +1,15 @@
+PYTHON:=$(VIRTUAL_ENV)/bin/python
+PIPENV:=$(VIRTUAL_ENV)/bin/pipenv
+PIP:=$(VIRTUAL_ENV)/bin/pip
+
 .PHONY: build
 build:
-	python setup.py bdist_wheel
+	$(PYTHON) setup.py bdist_wheel
 
 .PHONY: dev
 dev:
-	pip install -e .
+	$(PIP) install pipenv
+	$(PIPENV) install --dev -e .
 
 .PHONY: typehint
 typehint:
@@ -12,11 +17,19 @@ typehint:
 
 .PHONY: testdeps
 testdeps:
-	pip install -Ue .[tests]
+	$(PIPENV) install --dev -e .[tests]
+	touch testdeps
+
+.PHONY: unit
+unit:
+	$(PIPENV) run pytest -sv tests/unit/
+
+.PHONY: functional
+functional:
+	$(PIPENV) run pytest -sv tests/functional/
 
 .PHONY: test
-test:
-	pytest
+test: unit functional
 
 .PHONY: lint
 lint:
@@ -33,14 +46,14 @@ clean:
 
 .PHONY: doc
 doc:
-	pip install -e .[docs]
-	make -C doc/ html
+	$(PIPENV) install --dev -e .[docs]
+	$(PIPENV) run make -C doc/ html
 	@xdg-open doc/_build/html/index.html
 
 .PHONY: tox
 tox:
-	pip install -U tox
-	tox
+	$(PIPENV) install tox
+	$(PIPENV) run tox
 
 # use; make release VERSION=<version>
 .PHONY: release
