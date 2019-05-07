@@ -1,6 +1,7 @@
 .PHONY: build
 build:
-	python setup.py bdist_wheel
+	$(VIRTUAL_ENV)/bin/pip install wheel
+	python setup.py sdist bdist_wheel
 
 .PHONY: dev
 dev:
@@ -27,7 +28,7 @@ checklist: testdeps lint typehint test
 
 .PHONY: clean
 clean:
-	rm -fr .coverage .cache/ .tox/ build/ .mypy_cache/ *.comp
+	rm -fr .coverage .cache/ .tox/ build/ .mypy_cache/ *.comp dist
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -exec rm -fr {} +
 
