@@ -8,12 +8,12 @@ DATA_FILES_FIXTURE_NAME = "data_file"
 
 
 def _load_files_contents(*files):
-    for fl in files:
-        with open(fl) as f:
-            yield f.read()
+    for file_ in files:
+        with open(file_) as source:
+            yield source.read()
 
 
-def pytest_generate_tests(metafunc):
+def pytest_generate_tests(metafunc):  # pylint: disable=C0111
     if DATA_FILES_FIXTURE_NAME in metafunc.fixturenames:
         metafunc.parametrize(
             DATA_FILES_FIXTURE_NAME,
