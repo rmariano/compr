@@ -2,10 +2,12 @@
 import os
 import struct
 import sys
-from functools import singledispatch, wraps
+from functools import singledispatch, wraps, partial
 from typing import Callable, Union, overload
 
 from compressor.constants import ENC
+
+_DEFAULT_ENCODING = "UTF-8"
 
 
 def default_filename(filename: str, suffix: str = "comp") -> str:
@@ -14,7 +16,7 @@ def default_filename(filename: str, suffix: str = "comp") -> str:
     operation in course is a compression.
     """
     basename = os.path.basename(filename)
-    return "{basename}.{suffix}".format(basename=basename, suffix=suffix)
+    return f"{basename}.{suffix}"
 
 
 def endianess_prefix(parm_type=str) -> Union[str, bytes]:
@@ -52,9 +54,7 @@ def patched_struct(struct_function: Callable) -> Callable:
         :param args: The *args of the original function
         """
         endian = endianess_prefix(type(code))
-        assert type(code) is type(endian), "Type mismatch: {} and {}".format(
-            type(code), type(endian)
-        )
+        assert type(code) is type(endian), f"Type mismatch: {type(code)} and {type(endian)}"
         if not code.startswith(endian):  # type: ignore
             code = endian + code  # type: ignore
         return struct_function(code, *args)
@@ -96,7 +96,7 @@ def _(number) -> str:
     return format(number, "b")
 
 
-@overload
+@overload  # type: ignore
 @tobinary.register(str)
 @tobinary.register(bytes)
 def _(str_hex):  # type: ignore
@@ -129,7 +129,7 @@ class StreamFile:
         self._data_source = None
 
     def __enter__(self):
-        self._data_source = open(self.filename)
+        self._data_source = open_text_file(self.filename)
         return self
 
     def __exit__(self, ex_type, ex_value, ex_tb):
@@ -143,3 +143,6 @@ class StreamFile:
         if not data:
             raise StopIteration
         return data
+
+
+open_text_file = partial(open, encoding=_DEFAULT_ENCODING)

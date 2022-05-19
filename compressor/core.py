@@ -19,6 +19,7 @@ from compressor.util import (
     pack,
     tobinary,
     unpack,
+    open_text_file
 )
 
 
@@ -45,9 +46,7 @@ def create_tree_code(charset: List[CharNode]) -> CharNode:
     return heapq.heappop(alpha_heap)
 
 
-def parse_tree_code(
-        tree: CharNode, table: dict = None, code: bytes = b""
-) -> dict:
+def parse_tree_code(tree: CharNode, table: dict = None, code: bytes = b"") -> dict:
     """
     Given the tree with the chars-frequency processed, return a table that
     maps each character with its binary representation on the new code:
@@ -93,21 +92,16 @@ def save_table(dest_file: io, table: dict) -> None:
     :param table:     Mapping table with the chars and their codes.
     """
     offset = len(table)
-    tokens = [
-        (char.encode(ENC), int(b"1" + codec, base=2))
-        for char, codec in table.items()
-    ]
+    tokens = [(char.encode(ENC), int(b"1" + codec, base=2)) for char, codec in table.items()]
 
     chars, codecs = zip(*tokens)
 
     dest_file.write(pack("i", offset))
-    dest_file.write(pack("{0}c".format(offset), *chars))
-    dest_file.write(pack("{0}L".format(offset), *codecs))
+    dest_file.write(pack(f"{offset}c", *chars))
+    dest_file.write(pack(f"{offset}L", *codecs))
 
 
-def process_line_compression(
-        buffer_line: str, output_file: io, table: dict
-) -> None:
+def process_line_compression(buffer_line: str, output_file: io, table: dict) -> None:
     """
     Transform `buffer_line` into the new code, per-byte, based on `table`
     and save the new byte-stream into `output_file`.
@@ -138,9 +132,7 @@ def process_line_compression(
     output_file.write(block)
 
 
-def compress_and_save_content(
-        input_filename: str, output_file: io, table: dict
-) -> None:
+def compress_and_save_content(input_filename: str, output_file: io, table: dict) -> None:
     """
     Opens and processes <input_filename>. Iterates over the file and writes
     the contents on output_file.
@@ -168,10 +160,10 @@ def retrieve_table(dest_file: io) -> dict:
     chars = dest_file.read(offset * _sizeof("c"))
     codes = dest_file.read(offset * _sizeof("L"))
 
-    chars = unpack("{}c".format(offset), chars)
-    codes = unpack("{}L".format(offset), codes)
+    chars = unpack(f"{offset}c", chars)
+    codes = unpack(f"{offset}L", codes)
     return {
-        "b{0}".format(tobinary(code)): str(char, encoding=ENC)
+        "b{0}".format(tobinary(code)): str(char, encoding=ENC)  # pylint: disable=consider-using-f-string
         for char, code in zip(chars, codes)
     }
 
@@ -186,9 +178,7 @@ def _retrieve_checksum(ifile: io) -> int:
     return unpack("L", rawdata)[0]
 
 
-def save_compressed_file(
-        filename: str, table: dict, checksum: int, dest_file: str = ""
-) -> None:
+def save_compressed_file(filename: str, table: dict, checksum: int, dest_file: str = "") -> None:
     """
     Given the original file by its `filename`, save a new one.
     `table` contains the new codes for each character on `filename`.
@@ -201,9 +191,7 @@ def save_compressed_file(
         compress_and_save_content(filename, target, table)
 
 
-def _decode_block(
-        binary_content: bytes, table: dict, block_length: int
-) -> str:
+def _decode_block(binary_content: bytes, table: dict, block_length: int) -> str:
     """Transform the compressed content of a block into the original text."""
     newchars = []
     cont = binascii.hexlify(binary_content)
@@ -253,6 +241,8 @@ def _reorganize_table_keys(table: dict) -> dict:
 def retrieve_compressed_file(filename: str, dest_file: str = "") -> None:
     """
     EXTRACT - Reconstruct the original file from the compressed copy.
+    Reads a binary file.
+    Writes into a text file.
     Write the output in the indicated `dest_file`.
     """
     with open(filename, "rb") as src:
@@ -263,5 +253,5 @@ def retrieve_compressed_file(filename: str, dest_file: str = "") -> None:
         dest_filename = dest_file or default_filename(filename, suffix="extr")
         stream = decode_file_content(src, table, checksum)
         # Dump the decoded extraction into its destination
-        with open(dest_filename, "w+") as out:
+        with open_text_file(dest_filename, "w+") as out:
             out.write(stream)
