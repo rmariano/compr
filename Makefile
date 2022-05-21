@@ -1,5 +1,4 @@
 PYTHON:=$(VIRTUAL_ENV)/bin/python
-PIPENV:=$(VIRTUAL_ENV)/bin/pipenv
 PIP:=$(VIRTUAL_ENV)/bin/pip
 
 .PHONY: build
@@ -7,27 +6,26 @@ build:
 	$(VIRTUAL_ENV)/bin/pip install wheel
 	$(PYTHON) setup.py sdist bdist_wheel
 
-.PHONY: dev
-dev:
-	$(PIP) install pipenv
-	$(PIPENV) install --dev -e .
-
 .PHONY: typehint
 typehint:
 	@./tests/checklist/typehint.sh
 
 .PHONY: testdeps
 testdeps:
-	$(PIPENV) install --dev -e .[tests]
-	touch testdeps
+	$(PIP) install -e .[tests]
+
+.PHONY: tox
+tox: testdeps
+	$(PIP) install tox
+	tox
 
 .PHONY: unit
 unit:
-	$(PIPENV) run pytest -sv tests/unit/
+	pytest -sv tests/unit/ $(ARGS)
 
 .PHONY: functional
 functional:
-	$(PIPENV) run pytest -sv tests/functional/
+	pytest -sv tests/functional/ $(ARGS)
 
 .PHONY: test
 test: unit functional
@@ -47,14 +45,10 @@ clean:
 
 .PHONY: doc
 doc:
-	$(PIPENV) install --dev -e .[docs]
-	$(PIPENV) run make -C doc/ html
+	$(PIP) install --dev -e .[docs]
+	$(MAKE) -C doc/ html
 	@xdg-open doc/_build/html/index.html
 
-.PHONY: tox
-tox:
-	$(PIPENV) install tox
-	$(PIPENV) run tox
 
 # use; make release VERSION=<version>
 .PHONY: release

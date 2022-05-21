@@ -2,7 +2,7 @@ from setuptools import setup
 
 from compressor.constants import VERSION
 
-tests_require = ("pytest", "pytest-cov", "codecov", "mypy", "pylint")
+tests_require = ("pytest", "pytest-cov", "codecov", "mypy", "pylint", "tox", "flake8", "black")
 docs_require = ("Sphinx", "sphinx-autodoc-annotation")
 
 
@@ -35,8 +35,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Operating System :: POSIX :: Linux",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     entry_points={"console_scripts": ["pycompress = compressor.cli:main"]},

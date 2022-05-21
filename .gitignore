@@ -16,3 +16,4 @@ doc/_build
 *.comp
 .pytest_cache/
 .vscode
+.env

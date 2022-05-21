@@ -14,36 +14,15 @@ def argument_parser() -> argparse.ArgumentParser:
     from sys.argv
     """
     parser = argparse.ArgumentParser(
-        prog='PyCompress',
+        prog="PyCompress",
         description="Compress text files.",
     )
-    parser.add_argument(
-        'filename',
-        type=str,
-        help="Name of the file to process"
-    )
+    parser.add_argument("filename", type=str, help="Name of the file to process")
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument(
-        '-c', '--compress',
-        action='store_true',
-        help="Compress the file"
-    )
-    group.add_argument(
-        '-x', '--extract',
-        action='store_true',
-        help="Extract the file"
-    )
-    parser.add_argument(
-        '-d', '--dest-file',
-        type=str,
-        default=None,
-        help="Destination File Name"
-    )
-    parser.add_argument(
-        '-v', '--version',
-        action='version',
-        version='%(prog)s {version}'.format(version=VERSION)
-    )
+    group.add_argument("-c", "--compress", action="store_true", help="Compress the file")
+    group.add_argument("-x", "--extract", action="store_true", help="Extract the file")
+    parser.add_argument("-d", "--dest-file", type=str, default=None, help="Destination File Name")
+    parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {VERSION}")
     return parser
 
 
@@ -58,8 +37,7 @@ def parse_arguments(args=None) -> dict:
     return vars(args)
 
 
-def main_engine(filename: str, extract: bool = False,
-                compress: bool = True, dest_file=None) -> int:
+def main_engine(filename: str, extract: bool = False, compress: bool = True, dest_file=None) -> int:
     """
     Main functionality for the program cli or call as library.
     `extract` & `compress` must have opposite values.
@@ -87,5 +65,5 @@ def main() -> int:  # pragma: nocover
     return main_engine(**parse_arguments())
 
 
-if __name__ == '__main__':  # pragma: nocover
+if __name__ == "__main__":  # pragma: nocover
     sys.exit(main())
