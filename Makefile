@@ -14,11 +14,6 @@ typehint:
 testdeps:
 	$(PIP) install -e .[tests]
 
-.PHONY: tox
-tox: testdeps
-	$(PIP) install tox
-	tox
-
 .PHONY: unit
 unit:
 	pytest -sv tests/unit/ $(ARGS)
@@ -39,7 +34,7 @@ checklist: testdeps lint typehint test
 
 .PHONY: clean
 clean:
-	rm -fr .coverage .cache/ .tox/ build/ .mypy_cache/ *.comp dist
+	rm -fr .coverage .cache/ build/ .mypy_cache/ *.comp dist
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -exec rm -fr {} +
 
