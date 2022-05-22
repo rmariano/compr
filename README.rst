@@ -71,13 +71,11 @@ Development
 
 To install the package in development mode, run::
 
-    make dev
+    make testdeps
 
 And run the tests with::
 
     make test
-
-Tests have dependencies that can be installed by running ``make testdeps``.
 
 Before submitting a pull request, run the checklist to make sure all
 dependencies are met (code style/linting, tests, pass, etc.). This is automated
@@ -89,10 +87,3 @@ with:
 
 This will run the checks for the code style (``make lint``), as well as the
 tests (``make test``).
-
-In order to check that the project runs with the supported Python versions,
-run:
-
-.. code:: bash
-
-    make tox
