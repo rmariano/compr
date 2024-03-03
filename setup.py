@@ -6,7 +6,7 @@ tests_require = ("pytest", "pytest-cov", "codecov", "mypy", "pylint", "flake8", 
 docs_require = ("Sphinx", "sphinx-autodoc-annotation")
 
 
-with open("README.rst", "r") as readme:
+with open("README.md", "r") as readme:
     LONG_DESC = readme.read()
 
 
